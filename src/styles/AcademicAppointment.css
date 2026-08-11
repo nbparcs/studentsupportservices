@@ -1,0 +1,119 @@
+/* ==========================================
+   APPOINTMENT FORM
+========================================== */
+
+.appointment-form-container {
+  max-width: 700px;
+  margin: 70px auto;
+  padding: 45px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.appointment-form-container h2 {
+  color: #1f2299;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.appointment-form-container p {
+  color: #666;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.appointment-form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Form Groups */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+/* Inputs */
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #fafbff;
+  border: 1px solid #d8dbe8;
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+/* Textarea */
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+/* Placeholder */
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #999;
+}
+
+/* Focus */
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  background: #fff;
+  border-color: #2f45d3;
+  box-shadow: 0 0 0 4px rgba(47, 69, 211, 0.12);
+}
+
+/* Date Picker */
+
+.form-group input[type="date"] {
+  cursor: pointer;
+}
+
+/* Button */
+
+.appointment-submit-btn {
+  margin-top: 10px;
+  padding: 15px;
+  background: #2f45d3;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.appointment-submit-btn:hover {
+  background: #1f2299;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(47, 69, 211, 0.3);
+}
+
+.appointment-submit-btn:active {
+  transform: translateY(0);
+}
