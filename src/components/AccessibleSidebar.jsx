@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   Laptop,
   PhoneCall,
+  ListChecks,
 } from "lucide-react";
 
 import "../styles/Accessible.css";
@@ -53,6 +54,11 @@ function AccessibleSidebar() {
         <NavLink to="/accessible/contact" className="sidebar-link">
           <PhoneCall size={20} />
           <span>Contact</span>
+        </NavLink>
+
+        <NavLink to="/accessible/tasks" className="nav-link">
+          <ListChecks size={20} />
+          Tasks
         </NavLink>
       </nav>
     </aside>

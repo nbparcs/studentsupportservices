@@ -16,7 +16,7 @@ function Disability() {
   return (
     <>
       {/* HERO */}
-      <section className="hero">
+      <section className="hero" data-aoi="Disability Hero">
         <div className="hero-bg">
           <div className="circle circle-1"></div>
           <div className="circle circle-2"></div>
@@ -37,7 +37,7 @@ function Disability() {
       </section>
 
       {/*Quick Links*/}
-      <section className="quicklinks">
+      <section className="quicklinks" data-aoi="Disability Quick Links">
         <h2>Quick Links</h2>
 
         <div className="qlinks">
@@ -49,12 +49,12 @@ function Disability() {
       </section>
 
       {/* CONTENT */}
-      <section className="services">
+      <section className="services" data-aoi="Disability Services">
         <h2>Available Disability Support Services</h2>
 
         <div className="service-grid">
           {/* Learning Accommodations */}
-          <div className="service-card">
+          <div className="service-card" data-aoi="Learning Accommodations">
             <div className="icon disability">
               <BookOpenCheck size={32} />
             </div>
@@ -68,7 +68,7 @@ function Disability() {
           </div>
 
           {/* Exam Arrangements */}
-          <div className="service-card">
+          <div className="service-card" data-aoi="Exam Arrangements">
             <div className="icon disability">
               <ClipboardList size={32} />
             </div>
@@ -97,11 +97,14 @@ function Disability() {
         </div>
       </section>
 
-      <section className="howtosupport">
+      <section
+        className="howtosupport"
+        data-aoi="Disability Appointment Preparation"
+      >
         <h2>We can better support you if you have these ready</h2>
 
         <div className="support-columns">
-          <div className="support-column">
+          <div className="support-column" data-aoi="Before Appointment">
             <h3>Before Your Appointment</h3>
             <ul>
               <li>
@@ -119,7 +122,7 @@ function Disability() {
             </ul>
           </div>
 
-          <div className="support-column">
+          <div className="support-column" data-aoi="During Appointment">
             <h3>During Your Appointment</h3>
             <ul>
               <li>
@@ -139,7 +142,10 @@ function Disability() {
           </div>
         </div>
       </section>
-      <section className="MeetDisabilityAdvisor">
+      <section
+        className="MeetDisabilityAdvisor"
+        data-aoi="Learning Advisor Section"
+      >
         <div className="learn-icon">
           <UserStar size={70} />
         </div>
@@ -151,30 +157,44 @@ function Disability() {
           located at Student Learning Centre or Online, from Monday to Friday
           9-5PM and for FREE.
         </p>
-        <Link className="baseline-primary-btn">Book Learning Support</Link>
+        <Link
+          className="baseline-primary-btn"
+          data-aoi="Book Learning Support Button"
+        >
+          Book Learning Support
+        </Link>
       </section>
 
       {/*Student Resources*/}
-      <section className="StudentResources">
+      <section
+        className="StudentResources"
+        data-aoi="Disability Student Resources"
+      >
         <h2>Student Resources</h2>
         <h4>Helpful resources to support your studies</h4>
 
         <div className="studentresourcecolumns">
-          <div className="studentresourcecolumn">
+          <div className="studentresourcecolumn" data-aoi="Accessibility Guide">
             <div className="src_icon">
               <NotepadText size={20} />
               <p>Accessibility Guide</p>
             </div>
           </div>
 
-          <div className="studentresourcecolumn">
+          <div
+            className="studentresourcecolumn"
+            data-aoi="Accommodation Application Guide"
+          >
             <div className="src_icon">
               <House size={20} />
               <p>Accommodation Application Guide</p>
             </div>
           </div>
 
-          <div className="studentresourcecolumn">
+          <div
+            className="studentresourcecolumn"
+            data-aoi="Assistive Technology Resources"
+          >
             <div className="src_icon">
               <Laptop size={20} />
               <p>Assistive Technology Resources</p>
@@ -183,9 +203,9 @@ function Disability() {
         </div>
       </section>
 
-      <section className="StudentResourcesFAQ">
+      <section className="StudentResourcesFAQ" data-aoi="Disability FAQ">
         <h2>Frequently Asked Questions (FAQ)</h2>
-        <div className="SRFAQ">
+        <div className="SRFAQ" data-aoi="FAQ Access Disability Support">
           Q: Who can access Disability Support?
           <p>
             A: Students with disabilities, learning difficulties, health
@@ -193,16 +213,17 @@ function Disability() {
           </p>
         </div>
 
-        <div className="SRFAQ">
+        <div className="SRFAQ" data-aoi="FAQ Confidentiality">
           Q: Is my information confidential?
           <p>A: Yes. Student information is handled confidentially.</p>
         </div>
 
-        <div className="SRFAQ">
+        <div className="SRFAQ" data-aoi="FAQ Registration Timing">
           Q: When should I register for support?
           <p>
-            A: Students are encouraged to contact Disability Support as early as
-            possible.
+            A: We encourage students to contact Disability Support as early as
+            possible so their needs can be discussed and appropriate support or
+            learning adjustments can be arranged.
           </p>
         </div>
       </section>

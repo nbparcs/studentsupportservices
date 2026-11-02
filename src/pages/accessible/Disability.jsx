@@ -21,6 +21,7 @@ function Disability() {
       {/* HERO */}
       <section
         className="accessible-hero disability-hero"
+        data-aoi="Disability Hero"
         style={{
           backgroundImage: `url(${disabilityheroImg})`,
         }}
@@ -42,30 +43,52 @@ function Disability() {
             environment.
           </p>
 
-          <a href="#support" className="accessible-primary-btn">
+          <a
+            href="#support"
+            className="accessible-primary-btn"
+            data-aoi="Explore Disability Support Button"
+          >
             Explore Support
           </a>
         </div>
       </section>
 
       {/* QUICK LINKS */}
-      <section className="accessible-quicklinks">
+      <section
+        className="accessible-quicklinks"
+        data-aoi="Disability Quick Links"
+      >
         <h2>Quick Links</h2>
 
         <div className="quicklink-buttons">
-          <a href="#">Book Appointment</a>
-          <a href="#">Apply for Support</a>
-          <a href="#">Contact Advisor</a>
-          <a href="#">View Resources</a>
+          <a href="#" data-aoi="Book Appointment Quick Link">
+            Book Appointment
+          </a>
+          <a href="#" data-aoi="Apply for Support Quick Link">
+            Apply for Support
+          </a>
+          <a href="#" data-aoi="Contact Advisor Quick Link">
+            Contact Advisor
+          </a>
+          <a href="#" data-aoi="View Resources Quick Link">
+            View Resources
+          </a>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section className="accessible-services" id="support">
+      <section
+        className="accessible-services"
+        id="support"
+        data-aoi="Disability Services"
+      >
         <h2>Available Disability Support Services</h2>
 
         <div className="accessible-service-grid disability">
-          <div className="accessible-card disability">
+          <div
+            className="accessible-card disability"
+            data-aoi="Learning Accommodations"
+          >
             <img
               src={learningaccommodationsImg}
               alt="Learning accommodations"
@@ -80,7 +103,10 @@ function Disability() {
             </p>
           </div>
 
-          <div className="accessible-card disability">
+          <div
+            className="accessible-card disability"
+            data-aoi="Exam Arrangements"
+          >
             <img
               src={examarrangementsImg}
               alt="Exam arrangements"
@@ -95,7 +121,10 @@ function Disability() {
             </p>
           </div>
 
-          <div className="accessible-card disability">
+          <div
+            className="accessible-card disability"
+            data-aoi="Accessibility Assistance"
+          >
             <img
               src={assistanceImg}
               alt="Accessibility assistance"
@@ -113,12 +142,18 @@ function Disability() {
       </section>
 
       {/* HOW WE SUPPORT */}
-      <section className="accessible-support">
+      <section
+        className="accessible-support"
+        data-aoi="Disability Appointment Preparation"
+      >
         <h2>We can better support you if you have these ready</h2>
 
         <div className="support-columns">
           {/* BEFORE APPOINTMENT */}
-          <div className="support-column before-support">
+          <div
+            className="support-column before-support"
+            data-aoi="Before Appointment"
+          >
             <h3>Before Your Appointment</h3>
 
             <ul>
@@ -140,7 +175,10 @@ function Disability() {
           </div>
 
           {/* DURING APPOINTMENT */}
-          <div className="support-column during-support">
+          <div
+            className="support-column during-support"
+            data-aoi="During Appointment"
+          >
             <h3>During Your Appointment</h3>
 
             <ul>
@@ -164,7 +202,10 @@ function Disability() {
       </section>
 
       {/* BOOK ADVISOR */}
-      <section className="accessible-highlight disability">
+      <section
+        className="accessible-highlight disability"
+        data-aoi="Book Disability Advisor"
+      >
         <div className="highlight-content">
           <h2>Book a Disability Advisor</h2>
 
@@ -177,6 +218,7 @@ function Disability() {
           <Link
             to="/accessible/AcademicAppointment"
             className="accessible-primary-btn disability"
+            data-aoi="Book Disability Advisor Button"
           >
             Book Appointment
           </Link>
@@ -191,14 +233,16 @@ function Disability() {
       </section>
 
       {/* STUDENT RESOURCES */}
-
-      <section className="accessible-resources">
+      <section
+        className="accessible-resources"
+        data-aoi="Disability Student Resources"
+      >
         <h2>Student Resources</h2>
 
         <p>Helpful resources to support accessibility and learning.</p>
 
         <div className="resource-grid">
-          <div className="resource-card">
+          <div className="resource-card" data-aoi="Accessibility Guide">
             <img
               src={guideImg}
               alt="Accessibility Guide"
@@ -208,7 +252,10 @@ function Disability() {
             <p>Accessibility Guide</p>
           </div>
 
-          <div className="resource-card">
+          <div
+            className="resource-card"
+            data-aoi="Accommodation Application Guide"
+          >
             <img
               src={appguideImg}
               alt="Accommodation Application Guide"
@@ -218,7 +265,10 @@ function Disability() {
             <p>Accommodation Application Guide</p>
           </div>
 
-          <div className="resource-card">
+          <div
+            className="resource-card"
+            data-aoi="Assistive Technology Resources"
+          >
             <img
               src={assistivetechImg}
               alt="Assistive Technology Resources"
@@ -231,11 +281,10 @@ function Disability() {
       </section>
 
       {/* FAQ */}
-
-      <section className="accessible-faq">
+      <section className="accessible-faq" data-aoi="Disability FAQ">
         <h2>Frequently Asked Questions (FAQ)</h2>
 
-        <div>
+        <div data-aoi="Disability Eligibility FAQ">
           <strong>Q: Who can access Disability Support?</strong>
 
           <p>
@@ -244,13 +293,13 @@ function Disability() {
           </p>
         </div>
 
-        <div>
+        <div data-aoi="Disability Confidentiality FAQ">
           <strong>Q: Is my information confidential?</strong>
 
           <p>A: Yes. Student information is handled confidentially.</p>
         </div>
 
-        <div>
+        <div data-aoi="Disability Registration Timing FAQ">
           <strong>Q: When should I register for support?</strong>
 
           <p>

@@ -8,15 +8,13 @@ import { StudyProvider } from "./Context/StudyContext.jsx";
 import { TaskProvider } from "./Context/TaskContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <StudyProvider>
-        <TaskProvider>
-          <ResultsProvider>
-            <App />
-          </ResultsProvider>
-        </TaskProvider>
-      </StudyProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  <BrowserRouter>
+    <StudyProvider>
+      <TaskProvider>
+        <ResultsProvider>
+          <App />
+        </ResultsProvider>
+      </TaskProvider>
+    </StudyProvider>
+  </BrowserRouter>,
 );

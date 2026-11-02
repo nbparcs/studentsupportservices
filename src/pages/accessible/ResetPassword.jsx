@@ -9,6 +9,7 @@ function ResetPassword() {
       {/* HERO */}
       <section
         className="accessible-hero itsupport-hero"
+        data-aoi="Reset Password Hero"
         style={{
           backgroundImage: `url(${ITSupportheroImg})`,
         }}
@@ -33,10 +34,13 @@ function ResetPassword() {
       </section>
 
       {/* RESET STEPS */}
-      <section className="password-steps">
+      <section
+        className="password-steps"
+        data-aoi="Password Reset Instructions"
+      >
         <h2>How to Reset Your Password</h2>
 
-        <div className="password-step">
+        <div className="password-step" data-aoi="Password Reset Step 1">
           <div className="step-number">1</div>
 
           <div className="step-content">
@@ -52,7 +56,7 @@ function ResetPassword() {
           </div>
         </div>
 
-        <div className="password-step">
+        <div className="password-step" data-aoi="Password Reset Step 2">
           <div className="step-number">2</div>
 
           <div className="step-content">
@@ -62,7 +66,7 @@ function ResetPassword() {
           </div>
         </div>
 
-        <div className="password-step">
+        <div className="password-step" data-aoi="Password Reset Step 3">
           <div className="step-number">3</div>
 
           <div className="step-content">
@@ -72,7 +76,7 @@ function ResetPassword() {
           </div>
         </div>
 
-        <div className="password-step">
+        <div className="password-step" data-aoi="Password Reset Step 4">
           <div className="step-number">4</div>
 
           <div className="step-content">
@@ -83,7 +87,7 @@ function ResetPassword() {
         </div>
 
         {/* PASSWORD REQUIREMENTS */}
-        <div className="password-step">
+        <div className="password-step" data-aoi="Password Requirements">
           <div className="step-number requirements-number">
             <ShieldAlert size={32} />
           </div>
@@ -94,17 +98,29 @@ function ResetPassword() {
             <p>Your new password should include:</p>
 
             <ul className="password-list">
-              <li>At least 8 characters</li>
-              <li>Uppercase and lowercase letters</li>
-              <li>Numbers or symbols</li>
-              <li>Avoid using personal information</li>
+              <li data-aoi="Minimum Password Length">At least 8 characters</li>
+
+              <li data-aoi="Uppercase and Lowercase Requirement">
+                Uppercase and lowercase letters
+              </li>
+
+              <li data-aoi="Numbers and Symbols Requirement">
+                Numbers or symbols
+              </li>
+
+              <li data-aoi="Personal Information Warning">
+                Avoid using personal information
+              </li>
             </ul>
           </div>
         </div>
       </section>
 
       {/* HELP */}
-      <section className="accessible-contact">
+      <section
+        className="accessible-contact"
+        data-aoi="Password Reset Additional Help"
+      >
         <h2>Need Additional Help?</h2>
 
         <p>
@@ -113,7 +129,10 @@ function ResetPassword() {
         </p>
 
         <p className="helpinfo">
-          <a href="#">itsupport@student.edu</a> | 07 123 4567
+          <a href="#" data-aoi="IT Support Email">
+            itsupport@student.edu
+          </a>{" "}
+          | 07 123 4567
         </p>
       </section>
     </>

@@ -598,43 +598,145 @@ body {
 }
 
 /*Steps*/
+/* HOW TO RESET PASSWORD STEPS */
+
 .HowtoSteps {
-  margin-top: 50px;
-  padding: 30px;
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 20px 30px;
 }
 
 .HowtoSteps h2 {
-  margin-bottom: 40px;
-  padding: 40px auto;
+  margin: 0 0 35px;
+  text-align: center;
+  color: #2b2ed1;
+  font-size: 32px;
+  line-height: 1.4;
 }
+
 .HowtoStep {
-  color: #1f2299;
-  font-weight: 600;
-  margin-bottom: 30px;
+  background: #ffffff;
+  border: 1px solid #e1e5f5;
+  border-left: 5px solid #2b2ed1;
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  color: #2b2ed1;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(43, 46, 209, 0.06);
 }
 
 .HowtoStep p {
-  color: #666;
-  font-weight: 100;
+  margin: 10px 0 0;
+  color: #555555;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .HowtoSteps {
+    margin: 30px auto;
+    padding: 20px;
+  }
+
+  .HowtoSteps h2 {
+    font-size: 26px;
+    margin-bottom: 25px;
+  }
+
+  .HowtoStep {
+    padding: 20px;
+    font-size: 17px;
+  }
+
+  .HowtoStep p {
+    font-size: 15px;
+  }
 }
 
 /* Password Requirements*/
+/* PASSWORD REQUIREMENTS */
+
 .PasswordRequirements {
   background: #eef1ff;
-  padding: 40px;
-  margin: 20px auto;
+  padding: 55px 24px;
+  margin: 30px 0;
 }
+
 .PasswordRequirement {
-  padding: 20px auto;
-  margin: 20px auto;
-  width: 650px;
+  max-width: 650px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 35px 40px;
+  background: #ffffff;
+  border: 1px solid #e1e5f5;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(43, 46, 209, 0.08);
 }
+
+.PasswordRequirement h2 {
+  margin: 0 0 15px;
+  color: #2b2ed1;
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+.PasswordRequirement p {
+  margin: 0 0 22px;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.PasswordRequirements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .PasswordRequirements li {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 0 90px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
   font-size: 16px;
+  line-height: 1.6;
+}
+
+.PasswordRequirements li svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  flex-shrink: 0;
+  color: #2b2ed1;
+  stroke: #2b2ed1;
+}
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .PasswordRequirements {
+    padding: 35px 18px;
+  }
+
+  .PasswordRequirement {
+    padding: 25px 22px;
+  }
+
+  .PasswordRequirement h2 {
+    font-size: 24px;
+  }
+
+  .PasswordRequirements li {
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 15px;
+  }
 }
 
 /* FORM Message Us */
@@ -783,39 +885,28 @@ body {
 
 .tasks-hero {
   position: relative;
-
   width: 100%;
-
   padding: 130px 20px 90px;
-
   background: linear-gradient(180deg, #6277ff, #2b2ed1);
-
   color: white;
-
   overflow: hidden;
 }
 
 .tasks-hero-content {
   max-width: 800px;
-
   margin: auto;
-
   text-align: center;
 }
 
 .tasks-hero h1 {
   font-size: 48px;
-
   margin-bottom: 20px;
-
   color: white;
 }
 
 .tasks-hero p {
   font-size: 18px;
-
   line-height: 1.7;
-
   color: white;
 }
 
@@ -823,37 +914,23 @@ body {
 
 .tasks-hero::before {
   content: "";
-
   position: absolute;
-
   width: 250px;
-
   height: 250px;
-
   border-radius: 50%;
-
   background: rgba(255, 255, 255, 0.08);
-
   top: -80px;
-
   right: 100px;
 }
 
 .tasks-hero::after {
   content: "";
-
   position: absolute;
-
   width: 300px;
-
   height: 300px;
-
   border-radius: 50%;
-
   background: rgba(255, 255, 255, 0.08);
-
   bottom: -150px;
-
   left: 50px;
 }
 
@@ -861,22 +938,118 @@ body {
 
 .tasks-page {
   width: 100%;
-
   padding: 70px 40px 100px;
-
   background: #f7f8ff;
 }
 
 .task-list {
   max-width: 1100px;
-
   margin: auto;
-
   display: grid;
-
   grid-template-columns: repeat(3, 1fr);
-
   gap: 30px;
+}
+
+/* =====================================================
+   TASK CARDS
+===================================================== */
+
+.task-card {
+  position: relative;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 6px 20px rgba(43, 46, 209, 0.08);
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 260px;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Blue accent at the top */
+
+.task-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+
+  background: #2b2ed1;
+}
+
+/* Card hover */
+
+.task-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow: 0 12px 30px rgba(43, 46, 209, 0.15);
+}
+
+/* Task title */
+
+.task-card h2,
+.task-card h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+
+  color: #2b2ed1;
+
+  font-size: 21px;
+  line-height: 1.4;
+}
+
+/* Task text */
+
+.task-card p {
+  color: #555555;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  margin-bottom: 15px;
+}
+
+/* Task link/button */
+
+.task-card a,
+.task-card button {
+  display: inline-block;
+
+  margin-top: auto;
+  padding: 11px 20px;
+
+  background: #2b2ed1;
+  color: white;
+
+  border: none;
+  border-radius: 7px;
+
+  text-decoration: none;
+  text-align: center;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.task-card a:hover,
+.task-card button:hover {
+  background: #2224a8;
 }
 
 /* =====================================================
@@ -897,8 +1070,10 @@ body {
 
 .baseline-task-execution {
   min-height: calc(100vh - 70px);
-  background: #ffffff;
-  padding: 60px 40px;
+  background: #f7f8ff;
+
+  padding: 70px 40px;
+
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -911,11 +1086,34 @@ body {
 .baseline-task-card {
   width: 100%;
   max-width: 800px;
+
   background: #ffffff;
+
   padding: 45px 50px;
+
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+
+  box-shadow: 0 10px 30px rgba(43, 46, 209, 0.1);
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* Blue accent */
+
+.baseline-task-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 6px;
+
+  background: linear-gradient(90deg, #6277ff, #2b2ed1);
 }
 
 /* =====================================================
@@ -924,11 +1122,12 @@ body {
 
 .baseline-task-card h1 {
   margin: 0 0 35px;
-  font-size: 32px;
-  font-weight: 600;
-  color: #222222;
-}
 
+  font-size: 34px;
+  font-weight: 700;
+
+  color: #2b2ed1;
+}
 /* =====================================================
    SECTIONS
 ===================================================== */
@@ -939,15 +1138,19 @@ body {
 
 .baseline-task-section h2 {
   margin-bottom: 10px;
-  font-size: 21px;
-  font-weight: 600;
+
+  font-size: 20px;
+  font-weight: 700;
+
   color: #333333;
 }
 
 .baseline-task-section p {
   margin: 0;
+
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.7;
+
   color: #555555;
 }
 
@@ -957,84 +1160,157 @@ body {
 
 .baseline-start-task-btn {
   margin-top: 10px;
-  padding: 12px 28px;
+
+  padding: 13px 28px;
 
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
 
   background: #2b2ed1;
   color: white;
 
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
 
   cursor: pointer;
-  transition: background 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .baseline-start-task-btn:hover {
   background: #2224a8;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 6px 15px rgba(43, 46, 209, 0.25);
 }
 
 .baseline-start-task-btn:focus {
-  outline: 3px solid rgba(43, 46, 209, 0.3);
-  outline-offset: 2px;
+  outline: 3px solid rgba(255, 248, 31, 0.8);
+  outline-offset: 3px;
 }
 
 /* =====================================================
    TASK RUNNING
 ===================================================== */
 
-.baseline-task-running {
-  width: 100%;
-  max-width: 800px;
+.task-panel-floating {
+  position: fixed;
 
-  padding: 45px 50px;
+  right: 30px;
+  bottom: 30px;
+
+  width: 340px;
+
+  padding: 26px 28px;
 
   background: #ffffff;
 
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid #e1e3f2;
+  border-radius: 16px;
 
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 40px rgba(43, 46, 209, 0.18);
 
-  text-align: center;
+  z-index: 2000;
+
+  overflow: hidden;
 }
 
-.baseline-task-running h1 {
+/* Blue top accent */
+
+.task-panel-floating::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+
+  background: linear-gradient(90deg, #6277ff, #2b2ed1);
+}
+
+/* Task title */
+
+.task-panel-floating h3 {
+  margin: 0 0 12px;
+
+  color: #2b2ed1;
+
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+/* Instruction */
+
+.task-panel-floating p {
   margin-bottom: 20px;
 
-  font-size: 30px;
-  font-weight: 600;
+  color: #555555;
 
-  color: #333333;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
-.baseline-task-running p {
+/* Timer */
+
+.task-panel-floating h3:last-of-type {
+  display: inline-block;
+
+  padding: 8px 12px;
+
+  margin-top: 5px;
+
+  background: #eef1ff;
+
+  border-radius: 8px;
+
+  color: #2b2ed1;
+
   font-size: 16px;
-  line-height: 1.6;
-  color: #555555;
 }
 
 /* =====================================================
    FINISH BUTTON
 ===================================================== */
 
-.baseline-finish-btn {
-  padding: 8px 16px;
+.finish-task-btn {
+  width: 100%;
+
+  margin-top: 10px;
+
+  padding: 13px 18px;
 
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
 
   background: #2b2ed1;
   color: white;
 
   font-size: 15px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-.baseline-finish-btn:hover {
+.finish-task-btn:hover {
   background: #2224a8;
+
+  transform: translateY(-2px);
+}
+
+.finish-task-btn:focus {
+  outline: 3px solid rgba(255, 248, 31, 0.8);
+  outline-offset: 3px;
 }
 
 /* =====================================================

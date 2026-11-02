@@ -1,22 +1,24 @@
 import { useState } from "react";
-import EyeTracker from "../pages/baseline/EyeTracker";
 
 function EyeTrackerToggle() {
-  const [showTracker, setShowTracker] = useState(false);
+  const [showTracker, setShowTracker] = useState(true);
+
+  const handleToggle = () => {
+    const nextVisibility = !showTracker;
+
+    setShowTracker(nextVisibility);
+
+    if (window.webgazer) {
+      window.webgazer.showVideo(nextVisibility);
+      window.webgazer.showFaceOverlay(nextVisibility);
+      window.webgazer.showPredictionPoints(nextVisibility);
+    }
+  };
 
   return (
-    <>
-      <button
-        className="eye-toggle-btn"
-        onClick={() => setShowTracker((previous) => !previous)}
-      >
-        {showTracker ? "Hide Eye Tracker" : "Show Eye Tracker"}
-      </button>
-
-      {/* DO NOT REMOVE COMPONENT */}
-      {/* only hide WebGazer UI */}
-      <EyeTracker visible={showTracker} />
-    </>
+    <button type="button" className="eye-toggle-btn" onClick={handleToggle}>
+      {showTracker ? "Hide Eye Tracker" : "Show Eye Tracker"}
+    </button>
   );
 }
 

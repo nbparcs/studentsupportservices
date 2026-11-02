@@ -5,7 +5,7 @@ function IT() {
   return (
     <>
       {/* HERO */}
-      <section className="hero">
+      <section className="hero" data-aoi="IT Hero">
         <div className="hero-bg">
           <div className="circle circle-1"></div>
           <div className="circle circle-2"></div>
@@ -24,24 +24,36 @@ function IT() {
         </div>
       </section>
 
-      {/*Quick Links*/}
-      <section className="quicklinks">
+      {/* QUICK LINKS */}
+      <section className="quicklinks" data-aoi="IT Quick Links">
         <h2>Quick Links</h2>
 
         <div className="qlinks">
-          <a href="#">Reset Password </a>
-          <a href="#">Software Support </a>
-          <a href="#">Wi-Fi Help</a>
-          <a href="#">Device Support</a>
+          <Link
+            to="/baseline/resetpassword"
+            data-aoi="Reset Password Quick Link"
+          >
+            Reset Password
+          </Link>
+          <a href="#" data-aoi="Software Support Quick Link">
+            Software Support
+          </a>
+          <a href="#" data-aoi="WiFi Help Quick Link">
+            Wi-Fi Help
+          </a>
+          <a href="#" data-aoi="Device Support Quick Link">
+            Device Support
+          </a>
         </div>
       </section>
 
       {/* CONTENT */}
-      <section className="services">
+      <section className="services" data-aoi="IT Services">
         <h2>Available IT Services</h2>
 
         <div className="service-grid">
-          <div className="service-card">
+          {/* PASSWORD ASSISTANCE */}
+          <div className="service-card" data-aoi="Password Assistance">
             <div className="icon it">
               <KeyRound size={32} />
             </div>
@@ -53,12 +65,17 @@ function IT() {
               support with account access issues.
             </p>
 
-            <Link to="/baseline/resetpassword" className="service-btn">
+            <Link
+              to="/baseline/resetpassword"
+              className="service-btn"
+              data-aoi="Password Assistance Learn More"
+            >
               Learn More
             </Link>
           </div>
 
-          <div className="service-card">
+          {/* SOFTWARE SUPPORT */}
+          <div className="service-card" data-aoi="Software Support">
             <div className="icon it">
               <Laptop size={32} />
             </div>
@@ -75,7 +92,8 @@ function IT() {
             </Link>
           </div>
 
-          <div className="service-card">
+          {/* WIFI AND DEVICE SUPPORT */}
+          <div className="service-card" data-aoi="WiFi and Device Support">
             <div className="icon it">
               <Wifi size={32} />
             </div>
@@ -94,18 +112,24 @@ function IT() {
         </div>
       </section>
 
-      <section className="needhelp">
+      {/* CONTACT INFORMATION */}
+      <section className="needhelp" data-aoi="IT Contact Information">
         <h2>Need technical assistance?</h2>
         <p>
           Our IT Support team can help with account access, software, devices,
-          and campus technology.
+          and campus technology or any other IT related issues.
         </p>
+
         <p className="helpinfo">
-          <a href="#">itsupport@student.edu</a> | 07 123 4567
+          <a href="#" data-aoi="IT Support Email">
+            itsupport@student.edu
+          </a>{" "}
+          | or call 07 123 4567 for urgent issues.
         </p>
       </section>
 
-      <section className="letusknowform">
+      {/* CONTACT FORM */}
+      <section className="letusknowform" data-aoi="IT Support Request Form">
         <div className="letusknow_container">
           <h2>Or Let us know how we can help</h2>
 

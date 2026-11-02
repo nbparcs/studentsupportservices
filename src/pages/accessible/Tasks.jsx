@@ -25,36 +25,36 @@ function Tasks() {
             <TaskCard
               title="Task 1 - Academic Support"
               scenario="
-              You have an assignment due next week and need help improving your academic writing.
+              You have an assignment due next week and would like help improving your academic writing.
               "
               instruction="
-              Find a student support service that can help with assignments.
+              Find a way to book a free session with a Learning Advisor for help with your assignment.
               "
               link="/accessible/task/1"
             />
           </div>
 
-          <div data-aoi="Accessible Counselling Task">
+          <div data-aoi="Accessible Disability Task">
             <TaskCard
-              title="Task 2 - Counselling Support"
+              title="Task 2 - Disability Support"
               scenario="
-              You are feeling stressed and need someone to talk to about your wellbeing.
+              You think you may need disability support at university and want to know when you should register.
               "
               instruction="
-              Find a service that provides counselling support.
+              Find out when students are encouraged to register for Disability Support.
               "
               link="/accessible/task/2"
             />
           </div>
 
-          <div data-aoi="Accessible Disability Task">
+          <div data-aoi="Accessible IT Task">
             <TaskCard
-              title="Task 3 - Disability Support"
+              title="Task 3 - IT Support"
               scenario="
-              You need learning adjustments and accessibility assistance.
+              You are trying to reset your university password, but your new password is not being accepted.
               "
               instruction="
-              Find the disability support service.
+              Find out what requirements your new password must meet so you can reset it successfully.
               "
               link="/accessible/task/3"
             />

@@ -11,6 +11,7 @@ function IT() {
       {/* HERO */}
       <section
         className="accessible-hero itsupport-hero"
+        data-aoi="IT Hero"
         style={{
           backgroundImage: `url(${ITSupportheroImg})`,
         }}
@@ -32,19 +33,27 @@ function IT() {
             digital services to support your learning experience.
           </p>
 
-          <a href="#support" className="accessible-primary-btn">
+          <a
+            href="#support"
+            className="accessible-primary-btn"
+            data-aoi="Explore IT Support Button"
+          >
             Explore Support
           </a>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section className="accessible-services" id="support">
+      <section
+        className="accessible-services"
+        id="support"
+        data-aoi="IT Services"
+      >
         <h2>IT Services</h2>
 
         <div className="accessible-service-grid it">
           {/* Password Assistance */}
-          <div className="accessible-card it">
+          <div className="accessible-card it" data-aoi="Password Assistance">
             <img
               src={PasswordAssistanceImg}
               alt="Password assistance"
@@ -58,13 +67,17 @@ function IT() {
               support with account access issues.
             </p>
 
-            <Link to="/accessible/resetpassword" className="service-btn">
+            <Link
+              to="/accessible/resetpassword"
+              className="service-btn"
+              data-aoi="Password Assistance Learn More"
+            >
               Learn More
             </Link>
           </div>
 
           {/* Software Support */}
-          <div className="accessible-card it">
+          <div className="accessible-card it" data-aoi="Software Support">
             <img
               src={ITSoftwareImg}
               alt="Software support"
@@ -78,11 +91,16 @@ function IT() {
               applications, and other academic tools.
             </p>
 
-            <a href="#">Read More</a>
+            <a href="#" data-aoi="Software Support Read More">
+              Read More
+            </a>
           </div>
 
           {/* Wi-Fi Support */}
-          <div className="accessible-card it">
+          <div
+            className="accessible-card it"
+            data-aoi="WiFi and Device Support"
+          >
             <img
               src={WifiSupportImg}
               alt="Wi-Fi support"
@@ -96,14 +114,15 @@ function IT() {
               troubleshoot network or hardware issues.
             </p>
 
-            <a href="#">Read More</a>
+            <a href="#" data-aoi="WiFi Support Read More">
+              Read More
+            </a>
           </div>
         </div>
       </section>
 
       {/* NEED HELP */}
-
-      <section className="accessible-it-help">
+      <section className="accessible-it-help" data-aoi="IT Contact Information">
         <h2>Need technical assistance?</h2>
 
         <p>
@@ -112,18 +131,26 @@ function IT() {
         </p>
 
         <p className="it-help-info">
-          <a href="#">itsupport@student.edu</a> | 07 123 4567
+          <a href="#" data-aoi="IT Support Email">
+            itsupport@student.edu
+          </a>{" "}
+          | 07 123 4567
         </p>
       </section>
 
       {/* IT SUPPORT FORM */}
-
-      <section className="accessible-letusknow">
+      <section
+        className="accessible-letusknow"
+        data-aoi="IT Support Request Form"
+      >
         <div className="accessible-letusknow-container">
           <h2>Or Let us know how we can help</h2>
 
           <form>
-            <div className="accessible-form-message">
+            <div
+              className="accessible-form-message"
+              data-aoi="IT Request Name Field"
+            >
               <label>
                 Name <span>(*Required)</span>
               </label>
@@ -131,19 +158,28 @@ function IT() {
               <input type="text" placeholder="Enter your Name" />
             </div>
 
-            <div className="accessible-form-message">
+            <div
+              className="accessible-form-message"
+              data-aoi="IT Request Email Field"
+            >
               <label>Email</label>
 
               <input type="email" placeholder="Enter your Email" />
             </div>
 
-            <div className="accessible-form-message">
+            <div
+              className="accessible-form-message"
+              data-aoi="IT Request Student ID Field"
+            >
               <label>Student ID</label>
 
               <input type="text" placeholder="Enter your Student ID" />
             </div>
 
-            <div className="accessible-form-message">
+            <div
+              className="accessible-form-message"
+              data-aoi="IT Request Description Field"
+            >
               <label>Description of the problem</label>
 
               <textarea
@@ -152,7 +188,12 @@ function IT() {
               ></textarea>
             </div>
 
-            <button className="accessible-submit-btn">Submit Request</button>
+            <button
+              className="accessible-submit-btn"
+              data-aoi="IT Request Submit Button"
+            >
+              Submit Request
+            </button>
           </form>
         </div>
       </section>

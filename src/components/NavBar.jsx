@@ -31,6 +31,9 @@ function Navbar() {
         <NavLink to="/baseline/career">Career</NavLink>
         <NavLink to="/baseline/it">IT Support</NavLink>
         <NavLink to="/baseline/contact">Contact</NavLink>
+        <NavLink to="/baseline/tasks" className="nav-link">
+          Tasks
+        </NavLink>
       </nav>
 
       <div className="profile-icon">
