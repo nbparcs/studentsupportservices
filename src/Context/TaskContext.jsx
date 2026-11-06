@@ -18,18 +18,27 @@ export function TaskProvider({ children }) {
     return () => clearInterval(timer);
   }, [activeTask]);
 
+  // Start task and record its actual start timestamp.
   function startTask(task) {
     setSeconds(0);
 
-    setActiveTask(task);
+    setActiveTask({
+      ...task,
+      startedAtMs: Date.now(),
+    });
   }
 
-  function finishTask(gazeData) {
+  // Finish task and record its actual completion timestamp.
+  function finishTask(gazeData, completedAtMs = Date.now()) {
+    if (!activeTask) return null;
+
     const result = {
       task: activeTask,
       time: seconds,
-      completedAt: new Date().toISOString(),
-      gazeData: gazeData,
+      startedAtMs: activeTask.startedAtMs,
+      completedAtMs,
+      completedAt: new Date(completedAtMs).toISOString(),
+      gazeData,
     };
 
     setTaskResults((previous) => [...previous, result]);
@@ -47,6 +56,7 @@ export function TaskProvider({ children }) {
         activeTask,
         seconds,
         taskResults,
+        completedTasks,
         startTask,
         finishTask,
       }}

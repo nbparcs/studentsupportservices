@@ -1,8 +1,10 @@
 import TaskCard from "../../components/TaskCard";
+import FeedbackSurvey from "../../components/FeedbackSurvey";
 
 function Tasks() {
   return (
     <>
+      <FeedbackSurvey />
       {/* ACCESSIBLE TASK HERO */}
       <section
         className="accessible-tasks-hero"

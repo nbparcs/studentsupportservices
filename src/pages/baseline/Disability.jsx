@@ -150,18 +150,17 @@ function Disability() {
           <UserStar size={70} />
         </div>
 
-        <h2>Book a Learning Advisor</h2>
+        <h2>Book a Disability Advisor</h2>
         <p>
-          Meet with a Learning Advisor for free to discuss your assignment or
-          improve your academic writing. Session duration will be 30–60 minutes,
-          located at Student Learning Centre or Online, from Monday to Friday
-          9-5PM and for FREE.
+          Meet with a Disability Advisor to discuss accessibility needs,
+          learning accommodations and available support services. Appointments
+          are available online or on campus.
         </p>
         <Link
           className="baseline-primary-btn"
-          data-aoi="Book Learning Support Button"
+          data-aoi="Book Disability Advisor Button"
         >
-          Book Learning Support
+          Book Appointment
         </Link>
       </section>
 

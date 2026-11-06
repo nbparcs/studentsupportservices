@@ -30,6 +30,8 @@ function EyeTracker() {
   const gazeDataRef = useRef([]);
   const aoiStatsRef = useRef({});
 
+  const [showCalibrationMessage, setShowCalibrationMessage] = useState(false);
+
   const location = useLocation();
 
   const {
@@ -58,6 +60,18 @@ function EyeTracker() {
   const activeTaskRef = useRef(activeTask);
 
   const { addGazeRecord } = useContext(ResultsContext);
+
+  useEffect(() => {
+    if (hasConsented && isCalibrated) {
+      setShowCalibrationMessage(true);
+
+      const timer = setTimeout(() => {
+        setShowCalibrationMessage(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasConsented, isCalibrated]);
 
   /* --------------------------------
      Refresh AOIs whenever page changes
@@ -342,6 +356,189 @@ function EyeTracker() {
   }, [hasConsented]);
 
   /* --------------------------------
+   Draggable and collapsible WebGazer preview
+-------------------------------- */
+
+  useEffect(() => {
+    if (!isWebGazerReady) return;
+
+    let observer;
+    let toolbar = null;
+    let videoContainer = null;
+
+    const setupVideoControls = () => {
+      videoContainer = document.getElementById("webgazerVideoContainer");
+
+      if (!videoContainer || toolbar) return;
+
+      // Get the current position of the WebGazer container.
+      const rect = videoContainer.getBoundingClientRect();
+
+      let containerTop = rect.top;
+      let containerLeft = rect.left;
+
+      // Keep WebGazer's video preview in its own floating position.
+      videoContainer.style.setProperty("position", "fixed", "important");
+      videoContainer.style.setProperty("top", `${containerTop}px`, "important");
+      videoContainer.style.setProperty(
+        "left",
+        `${containerLeft}px`,
+        "important",
+      );
+      videoContainer.style.setProperty("right", "auto", "important");
+      videoContainer.style.setProperty("bottom", "auto", "important");
+      videoContainer.style.setProperty("z-index", "9000", "important");
+
+      // Create a separate control bar.
+      toolbar = document.createElement("div");
+
+      toolbar.style.cssText = `
+      position: fixed;
+      top: ${containerTop - 10}px;
+      left: ${containerLeft}px;
+      width: 305px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #2b2ed1;
+      color: white;
+      border-radius: 6px 6px 0 0;
+      z-index: 9001;
+      box-sizing: border-box;
+      padding: 0 8px;
+      font-family: Arial, sans-serif;
+    `;
+
+      // Drag handle.
+      const dragHandle = document.createElement("div");
+
+      dragHandle.innerHTML = "⠿";
+      dragHandle.title = "Drag to move";
+      dragHandle.style.cssText = `
+      cursor: grab;
+      font-size: 22px;
+      padding: 0 10px;
+      user-select: none;
+      touch-action: none;
+    `;
+
+      // Collapse / expand button.
+      const toggleButton = document.createElement("button");
+
+      toggleButton.textContent = "−";
+      toggleButton.setAttribute("aria-label", "Collapse camera preview");
+
+      toggleButton.style.cssText = `
+      width: 28px;
+      height: 26px;
+      border: none;
+      border-radius: 4px;
+      background:  #fff81f;
+      color: #2b2ed1;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    `;
+
+      let collapsed = false;
+
+      toggleButton.addEventListener("click", () => {
+        collapsed = !collapsed;
+
+        // Hide only the preview, not WebGazer itself.
+        videoContainer.style.visibility = collapsed ? "hidden" : "visible";
+
+        toggleButton.textContent = collapsed ? "+" : "−";
+        toggleButton.setAttribute(
+          "aria-label",
+          collapsed ? "Expand camera preview" : "Collapse camera preview",
+        );
+      });
+
+      // Dragging behaviour.
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+      let initialLeft = 0;
+      let initialTop = 0;
+
+      dragHandle.addEventListener("pointerdown", (event) => {
+        dragging = true;
+
+        startX = event.clientX;
+        startY = event.clientY;
+
+        initialLeft = containerLeft;
+        initialTop = containerTop;
+
+        dragHandle.style.cursor = "grabbing";
+        dragHandle.setPointerCapture(event.pointerId);
+      });
+
+      dragHandle.addEventListener("pointermove", (event) => {
+        if (!dragging) return;
+
+        const deltaX = event.clientX - startX;
+        const deltaY = event.clientY - startY;
+
+        containerLeft = initialLeft + deltaX;
+        containerTop = initialTop + deltaY;
+
+        videoContainer.style.setProperty(
+          "left",
+          `${containerLeft}px`,
+          "important",
+        );
+
+        videoContainer.style.setProperty(
+          "top",
+          `${containerTop}px`,
+          "important",
+        );
+
+        toolbar.style.left = `${containerLeft}px`;
+        toolbar.style.top = `${containerTop - 20}px`;
+      });
+
+      const stopDragging = () => {
+        dragging = false;
+        dragHandle.style.cursor = "grab";
+      };
+
+      dragHandle.addEventListener("pointerup", stopDragging);
+      dragHandle.addEventListener("pointercancel", stopDragging);
+
+      toolbar.appendChild(dragHandle);
+      toolbar.appendChild(toggleButton);
+
+      document.body.appendChild(toolbar);
+    };
+
+    // Check whether WebGazer has already created its container.
+    setupVideoControls();
+
+    // Otherwise, wait for WebGazer to inject it.
+    observer = new MutationObserver(() => {
+      setupVideoControls();
+
+      if (toolbar) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer?.disconnect();
+      toolbar?.remove();
+    };
+  }, [isWebGazerReady]);
+
+  /* --------------------------------
      Calibration click handler
   -------------------------------- */
 
@@ -429,8 +626,8 @@ function EyeTracker() {
           <div
             style={{
               position: "fixed",
-              top: 20,
-              left: 20,
+              top: 29,
+              left: 28,
               zIndex: 100000,
               background: "white",
               color: "#222",
@@ -494,7 +691,7 @@ function EyeTracker() {
           Calibration completed
       -------------------------------- */}
 
-      {hasConsented && isCalibrated && (
+      {showCalibrationMessage && (
         <div
           style={{
             position: "fixed",

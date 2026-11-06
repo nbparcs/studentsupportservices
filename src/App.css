@@ -1065,6 +1065,10 @@ body {
 }
 
 /* =====================================================
+   WEBGAZER container
+===================================================== */
+
+/* =====================================================
    BASELINE TASK EXECUTION
 ===================================================== */
 
@@ -1197,82 +1201,146 @@ body {
    TASK RUNNING
 ===================================================== */
 
+/* =====================================================
+   FLOATING TASK PANEL
+===================================================== */
+
 .task-panel-floating {
   position: fixed;
-
   right: 30px;
   bottom: 30px;
-
   width: 340px;
-
-  padding: 26px 28px;
-
+  padding: 0;
   background: #ffffff;
-
-  border: 1px solid #e1e3f2;
-  border-radius: 16px;
-
-  box-shadow: 0 15px 40px rgba(43, 46, 209, 0.18);
-
+  border: 1px solid #dbe1f0;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(30, 41, 100, 0.18);
   z-index: 2000;
-
   overflow: hidden;
+  font-family: inherit;
+  transition:
+    width 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* Blue top accent */
+/* Header */
 
-.task-panel-floating::before {
-  content: "";
+.task-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: linear-gradient(90deg, #3748c5, #2b2ed1);
+  color: white;
+  cursor: default;
+}
 
-  position: absolute;
+.task-panel-header span {
+  font-size: 14px;
+  font-weight: 600;
+}
 
-  top: 0;
-  left: 0;
+/* Collapse button */
 
-  width: 100%;
-  height: 5px;
+.task-panel-toggle {
+  width: 30px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
 
-  background: linear-gradient(90deg, #6277ff, #2b2ed1);
+.task-panel-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Task content */
+
+.task-panel-content {
+  padding: 22px 24px;
 }
 
 /* Task title */
 
-.task-panel-floating h3 {
+.task-panel-content h3 {
   margin: 0 0 12px;
-
   color: #2b2ed1;
-
   font-size: 19px;
   line-height: 1.4;
 }
 
-/* Instruction */
+/* Instructions */
 
-.task-panel-floating p {
-  margin-bottom: 20px;
-
+.task-panel-content p {
+  margin-bottom: 18px;
   color: #555555;
-
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
 /* Timer */
 
-.task-panel-floating h3:last-of-type {
+.task-panel-content h3:last-of-type {
   display: inline-block;
-
   padding: 8px 12px;
-
   margin-top: 5px;
-
+  margin-bottom: 15px;
   background: #eef1ff;
-
   border-radius: 8px;
-
   color: #2b2ed1;
-
   font-size: 16px;
+}
+
+/* Collapsed panel */
+
+.task-panel-floating.collapsed {
+  width: 220px;
+}
+
+.task-panel-floating.collapsed .task-panel-header {
+  border-radius: 13px;
+}
+
+/* Buttons inside task content */
+
+.task-panel-content button {
+  cursor: pointer;
+}
+
+/* Keep the Task Panel above other floating controls */
+.task-panel-floating {
+  right: 30px;
+  bottom: 30px;
+  z-index: 2000;
+}
+
+/* Move the Standard View button */
+.version-switcher {
+  right: 30px;
+  bottom: 420px;
+  z-index: 1900;
+}
+
+/* Smaller screens */
+
+@media (max-width: 600px) {
+  .task-panel-floating {
+    right: 12px;
+    bottom: 12px;
+    width: min(340px, calc(100vw - 24px));
+  }
+
+  .task-panel-floating.collapsed {
+    width: 200px;
+  }
 }
 
 /* =====================================================

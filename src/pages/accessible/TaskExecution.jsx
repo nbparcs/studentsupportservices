@@ -86,7 +86,11 @@ function TaskExecution() {
           <p>{task.instruction}</p>
         </div>
 
-        <button data-aoi="Accessible Start Task Button" onClick={handleStart}>
+        <button
+          className="primary-btn "
+          data-aoi="Accessible Start Task Button"
+          onClick={handleStart}
+        >
           Start Task
         </button>
       </div>

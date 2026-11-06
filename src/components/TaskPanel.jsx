@@ -8,6 +8,7 @@ import {
   calculateAOIAttention,
   calculateViewingTime,
   getGazePath,
+  calculateFixations,
 } from "../utils/gazeAnalysis";
 
 function TaskPanel() {
@@ -16,17 +17,19 @@ function TaskPanel() {
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Reset the completion screen whenever a new task starts.
-    setSaved(false);
-    setSaving(false);
+    if (activeTask) {
+      setSaved(false);
+      setSaving(false);
+    }
   }, [activeTask?.id]);
 
-  if (!activeTask) {
+  if (!activeTask && !saved) {
     return null;
   }
 
@@ -62,10 +65,17 @@ function TaskPanel() {
       // Get the gaze data after collection has stopped.
       const gazeData = window.debugGaze?.current || [];
 
+      const fixationAnalysis = calculateFixations(gazeData);
+
       const analysis = {
         aoiAttention: calculateAOIAttention(gazeData),
         viewingTime: calculateViewingTime(gazeData),
         gazePath: getGazePath(gazeData),
+
+        fixationCount: fixationAnalysis.fixationCount,
+        totalFixationDuration: fixationAnalysis.totalFixationDuration,
+        meanFixationDuration: fixationAnalysis.meanFixationDuration,
+        fixations: fixationAnalysis.fixations,
       };
 
       const completedAtMs = Date.now();
@@ -80,9 +90,13 @@ function TaskPanel() {
           taskCode: String(activeTask.id),
           taskTitle: activeTask.title,
           interfaceName: activeTask.interface,
-          durationSeconds: seconds,
+
+          durationSeconds: Math.floor(
+            (completedAtMs - activeTask.startedAtMs) / 1000,
+          ),
+
           completed: true,
-          startedAtMs: completedAtMs - seconds * 1000,
+          startedAtMs: activeTask.startedAtMs,
           completedAtMs,
           analysis,
         }),
@@ -96,28 +110,7 @@ function TaskPanel() {
 
       console.log("Task result saved to database:", responseData);
 
-      // Close the session after the task result is saved.
-      try {
-        const endResponse = await fetch(
-          `http://localhost:3001/api/sessions/${sessionId}/end`,
-          { method: "PATCH" },
-        );
-
-        const endData = await endResponse.json();
-
-        if (!endResponse.ok) {
-          throw new Error(endData.error || "Could not end research session.");
-        }
-
-        console.log("Research session ended:", endData.session);
-      } catch (endError) {
-        console.error(
-          "Task result saved, but session could not be closed:",
-          endError,
-        );
-      }
-
-      const result = finishTask(gazeData);
+      const result = finishTask(gazeData, completedAtMs);
       result.analysis = analysis;
       addTaskResult(result);
 
@@ -135,37 +128,58 @@ function TaskPanel() {
   };
 
   return (
-    <div className="task-panel-floating">
-      {saved ? (
-        <>
-          <h3>Task completed!</h3>
-          <p>Your task results have been saved successfully.</p>
+    <div className={`task-panel-floating ${isCollapsed ? "collapsed" : ""}`}>
+      {/* Panel Header */}
+      <div className="task-panel-header">
+        <span>Current Task</span>
 
-          <button
-            className="finish-task-btn"
-            onClick={() => navigate(tasksPath)}
-          >
-            Back to Tasks
-          </button>
-        </>
-      ) : (
-        <>
-          <h3>
-            Task {activeTask.id}: {activeTask.title}
-          </h3>
+        <button
+          type="button"
+          className="task-panel-toggle"
+          onClick={() => setIsCollapsed((prev) => !prev)}
+          aria-label={isCollapsed ? "Expand task panel" : "Collapse task panel"}
+          aria-expanded={!isCollapsed}
+        >
+          {isCollapsed ? "+" : "−"}
+        </button>
+      </div>
 
-          <p>{activeTask.instruction}</p>
+      {/* Task Content */}
+      {!isCollapsed && (
+        <div className="task-panel-content">
+          <h3>{activeTask?.title}</h3>
 
-          <h3>⏱ Time: {seconds}s</h3>
+          <p>{activeTask?.instructions}</p>
 
-          <button
-            className="finish-task-btn"
-            onClick={handleFinish}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Finish Task"}
-          </button>
-        </>
+          <div className="task-timer">
+            <span>Time Taken</span>
+            <h3>
+              {Math.floor(seconds / 60)
+                .toString()
+                .padStart(2, "0")}
+              :{(seconds % 60).toString().padStart(2, "0")}
+            </h3>
+          </div>
+
+          {!saved ? (
+            <button
+              type="button"
+              className="finish-task-btn"
+              onClick={handleFinish}
+              disabled={saving}
+            >
+              {saving ? "Saving Results..." : "Finish Task"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="finish-task-btn"
+              onClick={() => navigate(tasksPath)}
+            >
+              Back to Tasks
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

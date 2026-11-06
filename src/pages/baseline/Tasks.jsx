@@ -1,8 +1,10 @@
 import TaskCard from "../../components/TaskCard";
+import FeedbackSurvey from "../../components/FeedbackSurvey";
 
 function Tasks() {
   return (
     <>
+      <FeedbackSurvey />
       {/* TASK HERO */}
       <section className="tasks-hero" data-aoi="Tasks Hero">
         <div className="tasks-hero-content">

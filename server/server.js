@@ -361,77 +361,137 @@ app.post("/api/sessions", async (req, res) => {
 
 
 
+
 app.post("/api/participant-questionnaire", async (req, res) => {
   try {
     const {
       sessionId,
-      ageGroup,
       visionResponses,
       consentGiven,
     } = req.body;
 
-const allowedAgeGroups = [
-  "18-25",
-  "26-35",
-  "36+",
-  "prefer-not-to-say",
-];
-
-    const allowedVisionResponses = [
-  "Yes, frequently",
-  "Yes, sometimes",
-  "No, never",
-  "Not sure",
-  "None of the above",
-  "Prefer not to say",
-];
+    // Validate session ID
+    const parsedSessionId = Number(sessionId);
 
     if (
-      !Number.isInteger(Number(sessionId)) ||
-      Number(sessionId) < 1 ||
-      !allowedAgeGroups.includes(ageGroup) ||
-      !Array.isArray(visionResponses) ||
-      typeof consentGiven !== "boolean" ||
-      consentGiven !== true
+      !Number.isInteger(parsedSessionId) ||
+      parsedSessionId < 1
     ) {
       return res.status(400).json({
-        error: "Invalid questionnaire fields or consent not given.",
+        error: "Invalid session ID.",
       });
     }
 
-    if (
-      visionResponses.some(
-        (answer) => !allowedVisionResponses.includes(answer)
-      ) ||
-      visionResponses.length > allowedVisionResponses.length
-    ) {
+    // Validate consent
+    if (consentGiven !== true) {
       return res.status(400).json({
-        error: "Invalid vision responses.",
+        error: "Participant consent is required.",
       });
     }
 
+    // Validate questionnaire object
     if (
-      new Set(visionResponses).size !== visionResponses.length ||
-      (
-        visionResponses.includes("None of the above") &&
-        visionResponses.length > 1
-      ) ||
-      (
-        visionResponses.includes("Prefer not to say") &&
-        visionResponses.length > 1
+      !visionResponses ||
+      typeof visionResponses !== "object" ||
+      Array.isArray(visionResponses)
+    ) {
+      return res.status(400).json({
+        error: "Questionnaire responses must be an object.",
+      });
+    }
+
+    const q = visionResponses;
+    const validationErrors = [];
+
+    // Allowed answers for the four questions
+    const allowedStudentStatus = ["Yes", "No"];
+
+    const allowedCorrectiveLensUse = ["Yes", "No"];
+
+    const allowedVisionCorrectionType = [
+      "Eyeglasses",
+      "Corrective/contact lenses",
+      "Both glasses and corrective/contact lenses",
+      "None",
+    ];
+
+    const allowedWebsiteImportance = [
+      "Very important",
+      "Important",
+      "Less important",
+      "Not important",
+    ];
+
+    // Question 1: Tertiary enrolment
+    if (!allowedStudentStatus.includes(q.studentStatus)) {
+      validationErrors.push("Invalid tertiary enrolment response.");
+    } else if (q.studentStatus !== "Yes") {
+      validationErrors.push(
+        "This study is intended for currently enrolled tertiary students."
+      );
+    }
+
+    // Question 2: Corrective lenses during the task
+    if (
+      !allowedCorrectiveLensUse.includes(q.usingCorrectiveLenses)
+    ) {
+      validationErrors.push(
+        "Invalid corrective lens usage response."
+      );
+    }
+
+    // Question 3: Type of corrective lenses
+    if (
+      !allowedVisionCorrectionType.includes(q.visionCorrectionType)
+    ) {
+      validationErrors.push(
+        "Invalid vision correction type."
+      );
+    }
+
+    // Check consistency between Questions 2 and 3
+    if (
+      q.usingCorrectiveLenses === "Yes" &&
+      q.visionCorrectionType === "None"
+    ) {
+      validationErrors.push(
+        "Please select the type of corrective lenses you will use."
+      );
+    }
+
+    if (
+      q.usingCorrectiveLenses === "No" &&
+      q.visionCorrectionType !== "None"
+    ) {
+      validationErrors.push(
+        "If you are not using corrective lenses, please select None."
+      );
+    }
+
+    // Question 4: Importance of university websites
+    if (
+      !allowedWebsiteImportance.includes(
+        q.universityWebsiteImportance
       )
     ) {
+      validationErrors.push(
+        "Invalid university website importance response."
+      );
+    }
+
+    if (validationErrors.length > 0) {
       return res.status(400).json({
-        error: "Please check your vision responses.",
+        error: "Invalid questionnaire fields.",
+        details: validationErrors,
       });
     }
 
     const pool = await poolPromise;
 
-    // Confirm that the research session exists.
+    // Confirm research session exists
     const session = await pool
       .request()
-      .input("sessionId", sql.Int, Number(sessionId))
+      .input("sessionId", sql.Int, parsedSessionId)
       .query(`
         SELECT session_id
         FROM dbo.ResearchSessions
@@ -444,14 +504,21 @@ const allowedAgeGroups = [
       });
     }
 
+    // Save the four answers as JSON.
+    // age_group is NULL because the simplified questionnaire
+    // no longer collects participant age.
     await pool
       .request()
-      .input("sessionId", sql.Int, Number(sessionId))
-      .input("ageGroup", sql.NVarChar(20), ageGroup)
+      .input("sessionId", sql.Int, parsedSessionId)
       .input(
         "visionResponses",
         sql.NVarChar(sql.MAX),
-        JSON.stringify(visionResponses)
+        JSON.stringify({
+          studentStatus: q.studentStatus,
+          usingCorrectiveLenses: q.usingCorrectiveLenses,
+          visionCorrectionType: q.visionCorrectionType,
+          universityWebsiteImportance: q.universityWebsiteImportance,
+        })
       )
       .input("consentGiven", sql.Bit, true)
       .query(`
@@ -463,16 +530,25 @@ const allowedAgeGroups = [
         )
         VALUES (
           @sessionId,
-          @ageGroup,
+          NULL,
           @visionResponses,
           @consentGiven
         )
       `);
 
+    console.log("Questionnaire saved successfully:", {
+      sessionId: parsedSessionId,
+      studentStatus: q.studentStatus,
+      usingCorrectiveLenses: q.usingCorrectiveLenses,
+      visionCorrectionType: q.visionCorrectionType,
+      universityWebsiteImportance: q.universityWebsiteImportance,
+    });
+
     return res.status(201).json({
       message: "Participant questionnaire saved successfully.",
-      sessionId: Number(sessionId),
+      sessionId: parsedSessionId,
     });
+
   } catch (error) {
     console.error("Questionnaire save error:", error);
 
@@ -484,6 +560,143 @@ const allowedAgeGroups = [
 
     return res.status(500).json({
       error: "Could not save participant questionnaire.",
+    });
+  }
+});
+
+
+app.post("/api/participant-feedback", async (req, res) => {
+  try {
+    const sessionId = Number(req.body.sessionId);
+    const feedbackResponses = req.body.feedbackResponses;
+
+    if (!Number.isInteger(sessionId) || sessionId < 1) {
+      return res.status(400).json({
+        error: "Invalid research session ID.",
+      });
+    }
+
+    if (
+      !feedbackResponses ||
+      typeof feedbackResponses !== "object" ||
+      Array.isArray(feedbackResponses)
+    ) {
+      return res.status(400).json({
+        error: "Invalid feedback responses.",
+      });
+    }
+
+    const pool = await poolPromise;
+
+    const result = await pool
+      .request()
+      .input("sessionId", sql.Int, sessionId)
+      .input(
+        "feedbackResponses",
+        sql.NVarChar(sql.MAX),
+        JSON.stringify(feedbackResponses)
+      )
+      .query(`
+        BEGIN TRY
+          BEGIN TRANSACTION;
+
+          -- Confirm the research session exists.
+          IF NOT EXISTS (
+            SELECT 1
+            FROM dbo.ResearchSessions
+            WHERE session_id = @sessionId
+          )
+          BEGIN
+            THROW 50002, 'Research session not found.', 1;
+          END;
+
+          -- Require all six activities to be completed.
+          IF (
+            SELECT COUNT(*)
+            FROM (VALUES
+              ('Baseline', '1'),
+              ('Baseline', '2'),
+              ('Baseline', '3'),
+              ('Accessible', '1'),
+              ('Accessible', '2'),
+              ('Accessible', '3')
+            ) AS expected(interface_name, task_code)
+            WHERE EXISTS (
+              SELECT 1
+              FROM dbo.TaskResults tr
+              WHERE tr.session_id = @sessionId
+                AND tr.interface_name = expected.interface_name
+                AND tr.task_code = expected.task_code
+                AND tr.completed = 1
+            )
+          ) <> 6
+          BEGIN
+            THROW 50001,
+              'All six tasks must be completed before submitting feedback.',
+              1;
+          END;
+
+          -- Save participant feedback.
+          INSERT INTO dbo.ParticipantFeedback (
+            session_id,
+            feedback_responses_json
+          )
+          VALUES (
+            @sessionId,
+            @feedbackResponses
+          );
+
+          -- End the research session only after feedback is saved.
+          UPDATE dbo.ResearchSessions
+          SET ended_at = SYSUTCDATETIME()
+          WHERE session_id = @sessionId
+            AND ended_at IS NULL;
+
+          COMMIT TRANSACTION;
+
+          SELECT
+            session_id,
+            ended_at
+          FROM dbo.ResearchSessions
+          WHERE session_id = @sessionId;
+
+        END TRY
+        BEGIN CATCH
+          IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+          THROW;
+        END CATCH;
+      `);
+
+    return res.status(201).json({
+      message: "Feedback saved and research session completed.",
+      session: result.recordset[0],
+    });
+
+  } catch (error) {
+    console.error("Feedback submission failed:", error);
+
+    if (error.number === 50001) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+
+    if (error.number === 50002) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+
+    if (error.number === 2627 || error.number === 2601) {
+      return res.status(409).json({
+        error: "Feedback has already been submitted for this session.",
+      });
+    }
+
+    return res.status(500).json({
+      error: "Could not save participant feedback.",
     });
   }
 });

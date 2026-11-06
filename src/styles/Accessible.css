@@ -1412,3 +1412,43 @@
   line-height: 1.7;
   color: #374151;
 }
+
+/* =====================================================
+   TASK COMPLETION  */
+/* ==============================
+   WEBGAZER FLOATING WINDOW
+================================ */
+
+#webgazerVideoContainer {
+  position: fixed !important;
+
+  top: 20px !important;
+  left: 20px !important;
+
+  width: 300px !important;
+  height: 225px !important;
+
+  border: 3px solid #2b2ed1;
+  border-radius: 12px;
+
+  overflow: hidden !important;
+
+  background: #2b2ed1;
+
+  z-index: 10000 !important;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
+  transition:
+    width 0.25s ease,
+    height 0.25s ease;
+}
+
+/* Keep video and face overlay aligned */
+
+#webgazerVideoFeed,
+#webgazerFaceOverlay,
+#webgazerVideoCanvas,
+#webgazerFaceFeedbackBox {
+  border-radius: 8px;
+}
