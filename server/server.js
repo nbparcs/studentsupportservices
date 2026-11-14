@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const express = require("express");
@@ -8,8 +7,12 @@ const { poolPromise, sql } = require("./db");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const { computeAndSaveFixations } = require("./fixations");
+
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json({ limit: "1mb" }));
+
+const INTERFACES = ["Baseline", "Accessible"];
 
 // Check that the API is running
 app.get("/api/health", (req, res) => {
@@ -31,22 +34,16 @@ app.get("/api/health/db", async (req, res) => {
     });
   } catch (error) {
     console.error("Database health check failed:", error.message);
-    res.status(500).json({
-      error: "Database connection failed",
-    });
+    res.status(500).json({ error: "Database connection failed" });
   }
 });
 
-
+/* ------------------------------------------------------------------
+   Gaze samples
+------------------------------------------------------------------ */
 app.post("/api/gaze/batch", async (req, res) => {
   try {
     const { sessionId, samples } = req.body;
-
-     console.log("Gaze batch received:", {
-      sessionId,
-      sampleCount: Array.isArray(samples) ? samples.length : "not an array",
-      firstSample: samples?.[0],
-    });
 
     if (
       !Number.isInteger(sessionId) ||
@@ -62,7 +59,10 @@ app.post("/api/gaze/batch", async (req, res) => {
 
     for (const sample of samples) {
       if (
-        !["Baseline", "Accessible"].includes(sample.interface) ||
+        !sample ||
+        typeof sample.taskCode !== "string" ||
+        sample.taskCode.length > 50 ||
+        !INTERFACES.includes(sample.interface) ||
         typeof sample.page !== "string" ||
         sample.page.length > 500 ||
         !Number.isFinite(sample.x) ||
@@ -121,14 +121,37 @@ app.post("/api/gaze/batch", async (req, res) => {
     });
   } catch (error) {
     console.error("Save gaze batch failed:", error);
-    res.status(500).json({
-      error: "Could not save gaze samples.",
-    });
-    console.log("Received task result:", req.body);
+    res.status(500).json({ error: "Could not save gaze samples." });
+  }
+});
+
+/* ------------------------------------------------------------------
+   Compute and save fixations for a task
+------------------------------------------------------------------ */
+app.post("/api/gaze/fixations/:sessionId", async (req, res) => {
+  try {
+    const sessionId = Number(req.params.sessionId);
+    if (!Number.isInteger(sessionId) || sessionId < 1) {
+      return res.status(400).json({ error: "Invalid session ID." });
+    }
+
+    const { minDur = 100, maxDisp = 120, maxGap = 300 } = req.body ?? {};
+    if (![minDur, maxDisp, maxGap].every((v) => Number.isInteger(v) && v > 0 && v <= 5000)) {
+      return res.status(400).json({ error: "Invalid thresholds." });
+    }
+
+    const result = await computeAndSaveFixations(sessionId, { minDur, maxDisp, maxGap });
+    res.status(201).json({ message: "Fixations saved.", ...result });
+  } catch (error) {
+    console.error("Fixation detection failed:", error);
+    res.status(500).json({ error: "Could not compute fixations." });
   }
 });
 
 
+/* ------------------------------------------------------------------
+   Task results
+------------------------------------------------------------------ */
 app.post("/api/task-results", async (req, res) => {
   try {
     const {
@@ -143,20 +166,6 @@ app.post("/api/task-results", async (req, res) => {
       analysis,
     } = req.body;
 
-    console.log("Received task result:", {
-  sessionId,
-  taskCode,
-  taskCodeType: typeof taskCode,
-  taskTitle,
-  interfaceName,
-  durationSeconds,
-  durationSecondsType: typeof durationSeconds,
-  completed,
-  completedAtMs,
-  completedAtMsType: typeof completedAtMs,
-});
-
-    
     const validationErrors = [];
 
     if (!Number.isInteger(Number(sessionId)) || Number(sessionId) < 1) {
@@ -171,11 +180,12 @@ app.post("/api/task-results", async (req, res) => {
       validationErrors.push("taskTitle is invalid");
     }
 
-    if (!["Baseline", "Accessible"].includes(interfaceName)) {
+    if (!INTERFACES.includes(interfaceName)) {
       validationErrors.push("interfaceName is invalid");
     }
 
-    if (!Number.isInteger(durationSeconds) || durationSeconds < 0) {
+    // Accept decimals from the client and round them to whole seconds.
+    if (!Number.isFinite(durationSeconds) || durationSeconds < 0) {
       validationErrors.push("durationSeconds is invalid");
     }
 
@@ -187,16 +197,14 @@ app.post("/api/task-results", async (req, res) => {
       validationErrors.push("completedAtMs is invalid");
     }
 
-    
-if (validationErrors.length > 0) {
-  console.error("Task result validation errors:", validationErrors);
-  console.error("Full task result payload:", req.body);
+    if (validationErrors.length > 0) {
+      console.error("Task result validation errors:", validationErrors);
 
-  return res.status(400).json({
-    error: "Invalid task result fields.",
-    details: validationErrors,
-  });
-}
+      return res.status(400).json({
+        error: "Invalid task result fields.",
+        details: validationErrors,
+      });
+    }
 
     const pool = await poolPromise;
 
@@ -206,18 +214,18 @@ if (validationErrors.length > 0) {
       .input("taskCode", sql.NVarChar(50), taskCode)
       .input("taskTitle", sql.NVarChar(200), taskTitle)
       .input("interfaceName", sql.NVarChar(30), interfaceName)
-      .input("durationSeconds", sql.Int, durationSeconds)
+      .input("durationSeconds", sql.Int, Math.round(durationSeconds))
       .input("completed", sql.Bit, completed)
       .input(
         "startedAtMs",
         sql.BigInt,
-        Number.isFinite(startedAtMs) ? startedAtMs : null
+        Number.isFinite(startedAtMs) ? startedAtMs : null,
       )
       .input("completedAtMs", sql.BigInt, completedAtMs)
       .input(
         "analysisJson",
         sql.NVarChar(sql.MAX),
-        JSON.stringify(analysis ?? {})
+        JSON.stringify(analysis ?? {}),
       )
       .query(`
         INSERT INTO dbo.TaskResults (
@@ -252,22 +260,19 @@ if (validationErrors.length > 0) {
     });
   } catch (error) {
     console.error("Save task result failed:", error);
-    res.status(500).json({
-      error: "Could not save task result.",
-    });
+    res.status(500).json({ error: "Could not save task result." });
   }
 });
 
-
-
+/* ------------------------------------------------------------------
+   End a session manually
+------------------------------------------------------------------ */
 app.patch("/api/sessions/:sessionId/end", async (req, res) => {
   try {
     const sessionId = Number(req.params.sessionId);
 
     if (!Number.isInteger(sessionId) || sessionId < 1) {
-      return res.status(400).json({
-        error: "Invalid session ID.",
-      });
+      return res.status(400).json({ error: "Invalid session ID." });
     }
 
     const pool = await poolPromise;
@@ -291,9 +296,7 @@ app.patch("/api/sessions/:sessionId/end", async (req, res) => {
       `);
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({
-        error: "Research session not found.",
-      });
+      return res.status(404).json({ error: "Research session not found." });
     }
 
     return res.json({
@@ -302,94 +305,100 @@ app.patch("/api/sessions/:sessionId/end", async (req, res) => {
     });
   } catch (error) {
     console.error("End research session failed:", error);
-
-    return res.status(500).json({
-      error: "Could not end research session.",
-    });
+    return res.status(500).json({ error: "Could not end research session." });
   }
 });
 
-
+/* ------------------------------------------------------------------
+   Create a research session
+   The participant code is generated inside a locked transaction so
+   two simultaneous participants cannot receive the same code.
+------------------------------------------------------------------ */
 app.post("/api/sessions", async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    // Reuse the participant code when one is supplied.
-    let participantCode =
-      typeof req.body.participantCode === "string"
+    // Reuse a participant code only when a valid one is supplied.
+    const suppliedCode =
+      typeof req.body?.participantCode === "string"
         ? req.body.participantCode.trim()
         : "";
 
-    // Create a new participant code only for a new participant.
-    if (!participantCode) {
-      const nextCode = await pool.request().query(`
-        SELECT ISNULL(MAX(
-          TRY_CONVERT(INT, SUBSTRING(participant_code, 2, 20))
-        ), 0) + 1 AS nextNumber
-        FROM dbo.ResearchSessions
-        WHERE participant_code LIKE 'P%'
-      `);
-
-      participantCode =
-        `P${String(nextCode.recordset[0].nextNumber).padStart(3, "0")}`;
+    if (suppliedCode && !/^P\d{3,}$/.test(suppliedCode)) {
+      return res.status(400).json({ error: "Invalid participant code." });
     }
 
     const result = await pool
       .request()
-      .input("participantCode", sql.NVarChar(50), participantCode)
+      .input("suppliedCode", sql.NVarChar(50), suppliedCode)
       .query(`
-        INSERT INTO dbo.ResearchSessions (participant_code)
-        VALUES (@participantCode);
+        BEGIN TRY
+          BEGIN TRANSACTION;
 
-        SELECT CAST(SCOPE_IDENTITY() AS INT) AS sessionId;
+          DECLARE @code NVARCHAR(50) = @suppliedCode;
+          DECLARE @next INT;
+          DECLARE @newSessionId INT;
+
+          IF @code = ''
+          BEGIN
+            SELECT @next = ISNULL(MAX(
+              TRY_CONVERT(INT, SUBSTRING(participant_code, 2, 20))
+            ), 0) + 1
+            FROM dbo.ResearchSessions WITH (UPDLOCK, HOLDLOCK)
+            WHERE participant_code LIKE 'P%';
+
+            SET @code = 'P' + CASE
+              WHEN @next < 1000
+                THEN RIGHT('000' + CAST(@next AS VARCHAR(10)), 3)
+              ELSE CAST(@next AS VARCHAR(20))
+            END;
+          END;
+
+          INSERT INTO dbo.ResearchSessions (participant_code)
+          VALUES (@code);
+
+          SET @newSessionId = CAST(SCOPE_IDENTITY() AS INT);
+
+          COMMIT TRANSACTION;
+
+          SELECT @newSessionId AS sessionId, @code AS participantCode;
+        END TRY
+        BEGIN CATCH
+          IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+          THROW;
+        END CATCH;
       `);
 
-    const sessionId = result.recordset[0].sessionId;
+    const { sessionId, participantCode } = result.recordset[0];
 
-    res.status(201).json({
-      sessionId,
-      participantCode,
-    });
+    res.status(201).json({ sessionId, participantCode });
   } catch (error) {
     console.error("Create session failed:", error);
-    res.status(500).json({
-      error: "Could not create research session.",
-    });
+    res.status(500).json({ error: "Could not create research session." });
   }
 });
 
-
-
-
-
+/* ------------------------------------------------------------------
+   Participant questionnaire (five questions)
+------------------------------------------------------------------ */
 app.post("/api/participant-questionnaire", async (req, res) => {
   try {
-    const {
-      sessionId,
-      visionResponses,
-      consentGiven,
-    } = req.body;
+    const { sessionId, visionResponses, consentGiven } = req.body;
 
-    // Validate session ID
     const parsedSessionId = Number(sessionId);
 
-    if (
-      !Number.isInteger(parsedSessionId) ||
-      parsedSessionId < 1
-    ) {
-      return res.status(400).json({
-        error: "Invalid session ID.",
-      });
+    if (!Number.isInteger(parsedSessionId) || parsedSessionId < 1) {
+      return res.status(400).json({ error: "Invalid session ID." });
     }
 
-    // Validate consent
     if (consentGiven !== true) {
       return res.status(400).json({
         error: "Participant consent is required.",
       });
     }
 
-    // Validate questionnaire object
     if (
       !visionResponses ||
       typeof visionResponses !== "object" ||
@@ -403,18 +412,16 @@ app.post("/api/participant-questionnaire", async (req, res) => {
     const q = visionResponses;
     const validationErrors = [];
 
-    // Allowed answers for the four questions
+    // Allowed answers for the five questions
     const allowedStudentStatus = ["Yes", "No"];
-
     const allowedCorrectiveLensUse = ["Yes", "No"];
-
     const allowedVisionCorrectionType = [
-      "Eyeglasses",
-      "Corrective/contact lenses",
+      "Eyeglass (spectacles)",
+      "Contact lenses",
       "Both glasses and corrective/contact lenses",
       "None",
     ];
-
+    const allowedComputerTypes = ["Laptop", "Desktop computer"];
     const allowedWebsiteImportance = [
       "Very important",
       "Important",
@@ -427,35 +434,27 @@ app.post("/api/participant-questionnaire", async (req, res) => {
       validationErrors.push("Invalid tertiary enrolment response.");
     } else if (q.studentStatus !== "Yes") {
       validationErrors.push(
-        "This study is intended for currently enrolled tertiary students."
+        "This study is intended for currently enrolled tertiary students.",
       );
     }
 
-    // Question 2: Corrective lenses during the task
-    if (
-      !allowedCorrectiveLensUse.includes(q.usingCorrectiveLenses)
-    ) {
-      validationErrors.push(
-        "Invalid corrective lens usage response."
-      );
+    // Question 2: Eyeglasses or contact lenses during the task
+    if (!allowedCorrectiveLensUse.includes(q.usingCorrectiveLenses)) {
+      validationErrors.push("Invalid corrective lens usage response.");
     }
 
-    // Question 3: Type of corrective lenses
-    if (
-      !allowedVisionCorrectionType.includes(q.visionCorrectionType)
-    ) {
-      validationErrors.push(
-        "Invalid vision correction type."
-      );
+    // Question 3: Type of vision correction
+    if (!allowedVisionCorrectionType.includes(q.visionCorrectionType)) {
+      validationErrors.push("Invalid vision correction type.");
     }
 
-    // Check consistency between Questions 2 and 3
+    // Consistency between Questions 2 and 3
     if (
       q.usingCorrectiveLenses === "Yes" &&
       q.visionCorrectionType === "None"
     ) {
       validationErrors.push(
-        "Please select the type of corrective lenses you will use."
+        "Please select the type of vision correction you use.",
       );
     }
 
@@ -464,19 +463,18 @@ app.post("/api/participant-questionnaire", async (req, res) => {
       q.visionCorrectionType !== "None"
     ) {
       validationErrors.push(
-        "If you are not using corrective lenses, please select None."
+        "If you will not be wearing eyeglasses or contact lenses, please select None.",
       );
     }
 
-    // Question 4: Importance of university websites
-    if (
-      !allowedWebsiteImportance.includes(
-        q.universityWebsiteImportance
-      )
-    ) {
-      validationErrors.push(
-        "Invalid university website importance response."
-      );
+    // Question 4: Laptop or desktop computer
+    if (!allowedComputerTypes.includes(q.computerType)) {
+      validationErrors.push("Invalid computer type response.");
+    }
+
+    // Question 5: Importance of university websites
+    if (!allowedWebsiteImportance.includes(q.universityWebsiteImportance)) {
+      validationErrors.push("Invalid university website importance response.");
     }
 
     if (validationErrors.length > 0) {
@@ -488,7 +486,6 @@ app.post("/api/participant-questionnaire", async (req, res) => {
 
     const pool = await poolPromise;
 
-    // Confirm research session exists
     const session = await pool
       .request()
       .input("sessionId", sql.Int, parsedSessionId)
@@ -499,14 +496,10 @@ app.post("/api/participant-questionnaire", async (req, res) => {
       `);
 
     if (session.recordset.length === 0) {
-      return res.status(404).json({
-        error: "Research session not found.",
-      });
+      return res.status(404).json({ error: "Research session not found." });
     }
 
-    // Save the four answers as JSON.
-    // age_group is NULL because the simplified questionnaire
-    // no longer collects participant age.
+    // age_group is NULL because the questionnaire does not collect age.
     await pool
       .request()
       .input("sessionId", sql.Int, parsedSessionId)
@@ -517,8 +510,9 @@ app.post("/api/participant-questionnaire", async (req, res) => {
           studentStatus: q.studentStatus,
           usingCorrectiveLenses: q.usingCorrectiveLenses,
           visionCorrectionType: q.visionCorrectionType,
+          computerType: q.computerType,
           universityWebsiteImportance: q.universityWebsiteImportance,
-        })
+        }),
       )
       .input("consentGiven", sql.Bit, true)
       .query(`
@@ -536,19 +530,10 @@ app.post("/api/participant-questionnaire", async (req, res) => {
         )
       `);
 
-    console.log("Questionnaire saved successfully:", {
-      sessionId: parsedSessionId,
-      studentStatus: q.studentStatus,
-      usingCorrectiveLenses: q.usingCorrectiveLenses,
-      visionCorrectionType: q.visionCorrectionType,
-      universityWebsiteImportance: q.universityWebsiteImportance,
-    });
-
     return res.status(201).json({
       message: "Participant questionnaire saved successfully.",
       sessionId: parsedSessionId,
     });
-
   } catch (error) {
     console.error("Questionnaire save error:", error);
 
@@ -564,16 +549,16 @@ app.post("/api/participant-questionnaire", async (req, res) => {
   }
 });
 
-
+/* ------------------------------------------------------------------
+   Participant feedback (ends the session after saving)
+------------------------------------------------------------------ */
 app.post("/api/participant-feedback", async (req, res) => {
   try {
     const sessionId = Number(req.body.sessionId);
     const feedbackResponses = req.body.feedbackResponses;
 
     if (!Number.isInteger(sessionId) || sessionId < 1) {
-      return res.status(400).json({
-        error: "Invalid research session ID.",
-      });
+      return res.status(400).json({ error: "Invalid research session ID." });
     }
 
     if (
@@ -581,9 +566,7 @@ app.post("/api/participant-feedback", async (req, res) => {
       typeof feedbackResponses !== "object" ||
       Array.isArray(feedbackResponses)
     ) {
-      return res.status(400).json({
-        error: "Invalid feedback responses.",
-      });
+      return res.status(400).json({ error: "Invalid feedback responses." });
     }
 
     const pool = await poolPromise;
@@ -594,7 +577,7 @@ app.post("/api/participant-feedback", async (req, res) => {
       .input(
         "feedbackResponses",
         sql.NVarChar(sql.MAX),
-        JSON.stringify(feedbackResponses)
+        JSON.stringify(feedbackResponses),
       )
       .query(`
         BEGIN TRY
@@ -673,20 +656,15 @@ app.post("/api/participant-feedback", async (req, res) => {
       message: "Feedback saved and research session completed.",
       session: result.recordset[0],
     });
-
   } catch (error) {
     console.error("Feedback submission failed:", error);
 
     if (error.number === 50001) {
-      return res.status(400).json({
-        error: error.message,
-      });
+      return res.status(400).json({ error: error.message });
     }
 
     if (error.number === 50002) {
-      return res.status(404).json({
-        error: error.message,
-      });
+      return res.status(404).json({ error: error.message });
     }
 
     if (error.number === 2627 || error.number === 2601) {
@@ -701,8 +679,6 @@ app.post("/api/participant-feedback", async (req, res) => {
   }
 });
 
-
 app.listen(PORT, () => {
   console.log(`Research API running on http://localhost:${PORT}`);
 });
-
