@@ -303,8 +303,9 @@ function Disability() {
           <strong>Q: When should I register for support?</strong>
 
           <p>
-            A: Students are encouraged to contact Disability Support as early as
-            possible.
+            A: We encourage students to contact Disability Support as early as
+            possible<br></br> so their needs can be discussed and appropriate
+            support or learning <br></br>adjustments can be arranged.
           </p>
         </div>
       </section>

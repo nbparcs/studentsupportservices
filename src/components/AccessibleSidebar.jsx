@@ -56,7 +56,7 @@ function AccessibleSidebar() {
           <span>Contact</span>
         </NavLink>
 
-        <NavLink to="/accessible/tasks" className="nav-link">
+        <NavLink to="/accessible/tasks" className="sidebar-link">
           <ListChecks size={20} />
           Tasks
         </NavLink>

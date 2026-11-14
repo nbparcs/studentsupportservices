@@ -1,12 +1,13 @@
 import "./App.css";
 import "./styles/Accessible.css";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { useStudy } from "./Context/StudyContext";
 import ParticipantPopup from "./components/ParticipantPopUp";
 
 import EyeTracker from "./pages/baseline/EyeTracker";
+import ParticipantInformation from "./pages/ParticipantInformation";
 
 // Baseline pages
 import BaselineLayout from "./components/BaselineLayout";
@@ -41,10 +42,17 @@ import AccessibleResetPassword from "./pages/accessible/ResetPassword";
 function App() {
   const { hasConsented, completeConsent } = useStudy();
 
+  const location = useLocation();
+
+  const isResearchInformationPage =
+    location.pathname === "/research-information";
+
   return (
     <div className="app">
       {/* Consent appears once, regardless of the selected interface */}
-      {!hasConsented && <ParticipantPopup onComplete={completeConsent} />}
+      {!hasConsented && !isResearchInformationPage && (
+        <ParticipantPopup onComplete={completeConsent} />
+      )}
 
       {/* One shared EyeTracker for the entire study */}
       {hasConsented && <EyeTracker />}
@@ -52,7 +60,10 @@ function App() {
       <main className="page">
         <Routes>
           <Route path="/" element={<Navigate to="/baseline/home" replace />} />
-
+          <Route
+            path="/research-information"
+            element={<ParticipantInformation />}
+          />
           {/* Baseline */}
           <Route path="/baseline" element={<BaselineLayout />}>
             <Route path="home" element={<Home />} />
@@ -71,7 +82,6 @@ function App() {
             <Route path="task/:taskId" element={<BaselineTaskExecution />} />
             <Route path="resetpassword" element={<ResetPassword />} />
           </Route>
-
           {/* Accessible */}
           <Route path="/accessible" element={<AccessibleLayout />}>
             <Route path="home" element={<AccessibleHome />} />

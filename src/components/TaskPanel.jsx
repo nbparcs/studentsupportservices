@@ -149,7 +149,7 @@ function TaskPanel() {
         <div className="task-panel-content">
           <h3>{activeTask?.title}</h3>
 
-          <p>{activeTask?.instructions}</p>
+          <p>{activeTask?.instruction}</p>
 
           <div className="task-timer">
             <span>Time Taken</span>

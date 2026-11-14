@@ -8,6 +8,7 @@ export function TaskProvider({ children }) {
   const [taskResults, setTaskResults] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
 
+  // Task timer
   useEffect(() => {
     if (!activeTask) return;
 
@@ -18,23 +19,27 @@ export function TaskProvider({ children }) {
     return () => clearInterval(timer);
   }, [activeTask]);
 
-  // Start task and record its actual start timestamp.
+  // Start task
   function startTask(task) {
+    const startedAtMs = Date.now();
+
     setSeconds(0);
 
     setActiveTask({
       ...task,
-      startedAtMs: Date.now(),
+      startedAtMs,
     });
   }
 
-  // Finish task and record its actual completion timestamp.
+  // Finish task
   function finishTask(gazeData, completedAtMs = Date.now()) {
     if (!activeTask) return null;
 
+    const durationSeconds = (completedAtMs - activeTask.startedAtMs) / 1000;
+
     const result = {
       task: activeTask,
-      time: seconds,
+      time: durationSeconds,
       startedAtMs: activeTask.startedAtMs,
       completedAtMs,
       completedAt: new Date(completedAtMs).toISOString(),
@@ -42,6 +47,7 @@ export function TaskProvider({ children }) {
     };
 
     setTaskResults((previous) => [...previous, result]);
+
     setCompletedTasks((previous) => [...previous, activeTask]);
 
     setActiveTask(null);

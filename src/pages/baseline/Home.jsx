@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 import {
   GraduationCap,
@@ -10,6 +11,14 @@ import {
 } from "lucide-react";
 
 function Home() {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+  }, []);
+
   return (
     <>
       {/* HERO SECTION */}

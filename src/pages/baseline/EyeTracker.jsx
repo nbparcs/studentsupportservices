@@ -34,6 +34,8 @@ function EyeTracker() {
 
   const location = useLocation();
 
+  const [showAOIStats, setShowAOIStats] = useState(false);
+
   const {
     studyData,
     hasConsented,
@@ -731,48 +733,93 @@ function EyeTracker() {
         />
       )}
 
-      {/* --------------------------------
-          Debug: gaze points
-      -------------------------------- */}
+      {/* ----- Collapsible AOI Statistics ------ */}
 
       <div
         style={{
           position: "fixed",
           top: 80,
-          left: 20,
+          left: 0,
           zIndex: 10000,
-          background: "white",
-          color: "#222",
-          padding: "10px",
-          fontSize: "12px",
+          display: "flex",
+          alignItems: "flex-start",
         }}
       >
-        Points: {gazeDataRef.current.length}
-      </div>
+        {/* Toggle Button */}
+        <button
+          onClick={() => setShowAOIStats(!showAOIStats)}
+          style={{
+            background: "#2426a8",
+            color: "white",
+            border: "none",
+            borderRadius: "0 8px 8px 0",
+            width: "32px",
+            height: "42px",
+            fontSize: "22px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "2px 2px 6px rgba(0,0,0,0.2)",
+          }}
+          title={showAOIStats ? "Hide AOI statistics" : "Show AOI statistics"}
+        >
+          {showAOIStats ? "‹" : "›"}
+        </button>
 
-      {/* --------------------------------
-          AOI statistics
-      -------------------------------- */}
+        {/* Statistics Panel */}
+        {showAOIStats && (
+          <div
+            style={{
+              background: "white",
+              color: "#222",
+              padding: "15px",
+              width: "190px",
+              borderRadius: "0 10px 10px 0",
+              boxShadow: "2px 3px 10px rgba(0,0,0,0.2)",
+              fontSize: "13px",
+              border: "1px solid #ddd",
+            }}
+          >
+            <b
+              style={{
+                display: "block",
+                fontSize: "14px",
+                color: "#2426a8",
+                marginBottom: "10px",
+              }}
+            >
+              AOI Attention
+            </b>
 
-      <div
-        style={{
-          position: "fixed",
-          top: 150,
-          left: 20,
-          zIndex: 10000,
-          background: "white",
-          color: "#222",
-          padding: "10px",
-          fontSize: "12px",
-        }}
-      >
-        <b>AOI Attention</b>
+            {/* Gaze Points */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "6px 0",
+                borderBottom: "1px solid #eee",
+              }}
+            >
+              <span>Gaze Points</span>
+              <b>{gazeDataRef.current.length}</b>
+            </div>
 
-        {Object.entries(aoiStats).map(([key, value]) => (
-          <div key={key}>
-            {key}: {value.count}
+            {/* AOI Statistics */}
+            {Object.entries(aoiStats).map(([key, value]) => (
+              <div
+                key={key}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "6px 0",
+                  borderBottom: "1px solid #eee",
+                }}
+              >
+                <span>{key}</span>
+                <b>{value.count}</b>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       {/* --------------------------------
