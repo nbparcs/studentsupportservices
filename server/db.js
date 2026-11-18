@@ -1,4 +1,4 @@
-const sql = require("mssql/msnodesqlv8");
+/*const sql = require("mssql/msnodesqlv8");
 
 const config = {
   connectionString:
@@ -11,15 +11,16 @@ const config = {
     trustedConnection: true,
     trustServerCertificate: true,
   },
-}; 
+}; */
 
-/*const sql = require("mssql");
+require("dotenv").config();
+const sql = require("mssql");
 
 const config = {
   user: "supahadminzst333",
   password: "password$%App123*",
   server: "studentconnect-sql-server.database.windows.net",
-  database: "StudentSupportResearch",
+  database: "StudentSupportResearch_Imported",
   port: 1433,
   options: {
     encrypt: true,
@@ -27,7 +28,7 @@ const config = {
   },
   connectionTimeout: 30000,
   requestTimeout: 30000,
-}; */
+}; 
 
 const poolPromise = new sql.ConnectionPool(config)
   .connect()
