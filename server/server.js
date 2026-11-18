@@ -580,6 +580,74 @@ app.post("/api/participant-feedback", async (req, res) => {
 
     const pool = await poolPromise;
 
+    // Check that the session exists and all six tasks are completed
+// before calculating fixations.
+const validation = await pool
+  .request()
+  .input("sessionId", sql.Int, sessionId)
+  .query(`
+    SELECT
+      CASE WHEN EXISTS (
+        SELECT 1
+        FROM dbo.ResearchSessions
+        WHERE session_id = @sessionId
+      ) THEN 1 ELSE 0 END AS sessionExists,
+
+      (
+        SELECT COUNT(*)
+        FROM (VALUES
+          ('Baseline', '1'),
+          ('Baseline', '2'),
+          ('Baseline', '3'),
+          ('Accessible', '1'),
+          ('Accessible', '2'),
+          ('Accessible', '3')
+        ) AS expected(interface_name, task_code)
+        WHERE EXISTS (
+          SELECT 1
+          FROM dbo.TaskResults tr
+          WHERE tr.session_id = @sessionId
+            AND tr.interface_name = expected.interface_name
+            AND tr.task_code = expected.task_code
+            AND tr.completed = 1
+        )
+      ) AS completedTaskCount,
+
+      CASE WHEN EXISTS (
+        SELECT 1
+        FROM dbo.ParticipantFeedback
+        WHERE session_id = @sessionId
+      ) THEN 1 ELSE 0 END AS feedbackExists;
+  `);
+
+const check = validation.recordset[0];
+
+if (!check.sessionExists) {
+  return res.status(404).json({
+    error: "Research session not found.",
+  });
+}
+
+if (check.completedTaskCount !== 6) {
+  return res.status(400).json({
+    error: "All six tasks must be completed before submitting feedback.",
+  });
+}
+
+if (check.feedbackExists) {
+  return res.status(409).json({
+    error: "Feedback has already been submitted for this session.",
+  });
+}
+
+// Calculate and save fixations using the existing I-DT thresholds.
+const fixationResult = await computeAndSaveFixations(sessionId);
+
+console.log(
+  `Session ${sessionId}: ${fixationResult.fixationCount} fixations saved.`,
+);
+
+
     const result = await pool
       .request()
       .input("sessionId", sql.Int, sessionId)
@@ -662,9 +730,11 @@ app.post("/api/participant-feedback", async (req, res) => {
       `);
 
     return res.status(201).json({
-      message: "Feedback saved and research session completed.",
-      session: result.recordset[0],
-    });
+  message: "Feedback saved and research session completed.",
+  session: result.recordset[0],
+  fixationCount: fixationResult.fixationCount,
+  thresholds: fixationResult.thresholds,
+});
   } catch (error) {
     console.error("Feedback submission failed:", error);
 
