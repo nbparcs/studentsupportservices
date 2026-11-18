@@ -191,6 +191,7 @@ function IT() {
             <button
               className="accessible-submit-btn"
               data-aoi="IT Request Submit Button"
+              disabled
             >
               Submit Request
             </button>

@@ -148,7 +148,11 @@ function IT() {
 
             <div className="form-messageus">
               <label>Student ID</label>
-              <input type="text" placeholder="Enter your Student ID" />
+              <input
+                type="text"
+                placeholder="Enter your Student ID"
+                data-aoi="IT Request Student ID Field"
+              />
             </div>
 
             <div className="form-messageus">
@@ -156,10 +160,16 @@ function IT() {
               <textarea
                 rows="5"
                 placeholder="Describe your issue in detail..."
+                data-aoi="IT Request Description Field"
               ></textarea>
             </div>
 
-            <button type="submit" className="appointment-submit-btn">
+            <button
+              type="submit"
+              className="appointment-submit-btn"
+              disabled
+              data-aoi="IT Request Submit Button"
+            >
               Submit Request
             </button>
           </form>

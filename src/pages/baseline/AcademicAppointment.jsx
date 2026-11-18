@@ -72,6 +72,7 @@ function AcademicAppointment() {
             type="submit"
             className="appointment-submit-btn"
             data-aoi="Submit Appointment"
+            disabled
           >
             Submit Request
           </button>

@@ -71,7 +71,12 @@ function AcademicAppointment() {
               <input type="date" />
             </div>
 
-            <button type="submit" className="appointment-submit-btn">
+            <button
+              type="submit"
+              className="appointment-submit-btn"
+              data-aoi="Submit Appointment"
+              disabled
+            >
               Submit Request
             </button>
           </form>

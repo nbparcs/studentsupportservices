@@ -566,8 +566,11 @@
 
 .accessible-highlight {
   max-width: 1100px;
+  width: calc(100% - 100px);
   margin: 70px auto;
   padding: 50px;
+  box-sizing: border-box;
+
   background: #2f45d3;
   color: white;
   border-radius: 18px;
@@ -577,7 +580,6 @@
   justify-content: space-between;
   gap: 50px;
 }
-
 /* LEFT CONTENT */
 
 .highlight-content {
@@ -885,7 +887,7 @@
 }
 
 .accessible-faq p {
-  color: #666;
+  color: #222;
   text-align: left;
 }
 
@@ -1325,6 +1327,7 @@
 .accessible-task-list .task-card p {
   font-size: 17px;
   line-height: 1.8;
+  color: #222;
 }
 
 /* =====================================================
