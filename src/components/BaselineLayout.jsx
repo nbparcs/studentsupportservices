@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "./NavBar.jsx";
 import TaskPanel from "../components/TaskPanel";
 import VersionSwitcher from "../components/VersionSwitcher";
 
