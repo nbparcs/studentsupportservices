@@ -80,8 +80,7 @@ function TaskPanel() {
 
       const completedAtMs = Date.now();
 
-      //const response = await fetch("http://localhost:3001/api/task-results", {
-      const response = await fetch("/api/task-results", {
+      const response = await fetch("http://localhost:3001/api/task-results", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +149,7 @@ function TaskPanel() {
         <div className="task-panel-content">
           <h3>{activeTask?.title}</h3>
 
-          <p>{activeTask?.instruction}</p>
+          <p>{activeTask?.instructions}</p>
 
           <div className="task-timer">
             <span>Time Taken</span>

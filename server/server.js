@@ -9,7 +9,13 @@ const PORT = process.env.PORT || 3001;
 
 const { computeAndSaveFixations } = require("./fixations");
 
-app.use(cors({ origin: "http://localhost:5173" }));
+//app.use(cors({ origin: "http://localhost:5173" }));
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
+
+app.use(cors({ origin: allowedOrigins }));
+
 app.use(express.json({ limit: "1mb" }));
 
 const INTERFACES = ["Baseline", "Accessible"];
@@ -315,20 +321,23 @@ app.patch("/api/sessions/:sessionId/end", async (req, res) => {
    two simultaneous participants cannot receive the same code.
 ------------------------------------------------------------------ */
 app.post("/api/sessions", async (req, res) => {
+
   try {
-    const pool = await poolPromise;
+  const pool = await poolPromise;
 
-    // Reuse a participant code only when a valid one is supplied.
-    const suppliedCode =
-      typeof req.body?.participantCode === "string"
-        ? req.body.participantCode.trim()
-        : "";
+  // Reuse a participant code only when a valid one is supplied.
+  const suppliedCode =
+    typeof req.body?.participantCode === "string"
+      ? req.body.participantCode.trim()
+      : "";
 
-    if (suppliedCode && !/^P\d{3,}$/.test(suppliedCode)) {
-      return res.status(400).json({ error: "Invalid participant code." });
-    }
+  if (suppliedCode && !/^P\d{3,}$/.test(suppliedCode)) {
+    return res.status(400).json({
+      error: "Invalid participant code."
+    });
+  }
 
-    const result = await pool
+  const result = await pool
       .request()
       .input("suppliedCode", sql.NVarChar(50), suppliedCode)
       .query(`
@@ -681,4 +690,12 @@ app.post("/api/participant-feedback", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Research API running on http://localhost:${PORT}`);
+});
+
+app.get("/api/test-task-results", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Task results diagnostic endpoint is working.",
+    registeredEndpoint: "POST /api/task-results",
+  });
 });

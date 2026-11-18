@@ -1,6 +1,6 @@
 
-//const API_URL = "http://localhost:3001/api";
-const API_URL = "/api";
+const API_URL = "http://localhost:3001/api";
+//const API_URL = "/api";
 
 const PARTICIPANT_CODE_KEY = "researchParticipantCode";
 const ACTIVE_SESSION_KEY = "researchActiveSessionId";

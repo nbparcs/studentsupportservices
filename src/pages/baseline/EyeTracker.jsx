@@ -173,8 +173,8 @@ function EyeTracker() {
         while (queue.length > 0) {
           const batch = queue.slice(0, 100);
 
-          //const response = await fetch("http://localhost:3001/api/gaze/batch", {
-          const response = await fetch("/api/gaze/batch", {
+          const response = await fetch("http://localhost:3001/api/gaze/batch", {
+            //const response = await fetch("/api/gaze/batch", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
