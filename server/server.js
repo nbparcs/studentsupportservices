@@ -7,7 +7,7 @@ const { poolPromise, sql } = require("./db");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const { computeAndSaveFixations } = require("./fixations");
+const { computeAndSaveFixations } = require("./Fixations");
 
 //app.use(cors({ origin: "http://localhost:5173" }));
 const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
