@@ -9,12 +9,39 @@ const PORT = process.env.PORT || 3001;
 
 const { computeAndSaveFixations } = require("./Fixations");
 
-//app.use(cors({ origin: "http://localhost:5173" }));
+
 const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
   .split(",")
-  .map((o) => o.trim());
+  .map((origin) => origin.trim());
 
-app.use(cors({ origin: allowedOrigins }));
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests without an Origin header (e.g. health checks).
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // Allow explicitly configured origins.
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow Vercel preview deployments for this project.
+    const isVercelPreview =
+      /^https:\/\/studentsupportservices-src-[a-z0-9-]+\.vercel\.app$/.test(origin);
+
+    if (isVercelPreview) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Origin not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
 
 app.use(express.json({ limit: "1mb" }));
 
