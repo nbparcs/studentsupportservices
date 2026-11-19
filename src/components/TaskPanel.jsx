@@ -11,6 +11,8 @@ import {
   calculateFixations,
 } from "../utils/gazeAnalysis";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function TaskPanel() {
   const { activeTask, seconds, finishTask } = useContext(TaskContext);
   const { addTaskResult } = useResults();
@@ -80,7 +82,12 @@ function TaskPanel() {
 
       const completedAtMs = Date.now();
 
-      const response = await fetch("http://localhost:3001/api/task-results", {
+      //const response = await fetch("http://localhost:3001/api/task-results", {
+      if (!API_URL) {
+        throw new Error("VITE_API_URL is not configured.");
+      }
+
+      const response = await fetch(`${API_URL}/task-results`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,7 +109,18 @@ function TaskPanel() {
         }),
       });
 
-      const responseData = await response.json();
+      //const responseData = await response.json();
+
+      const responseText = await response.text();
+
+      let responseData;
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        console.error("Unexpected API response:", responseText);
+        throw new Error("The server returned an unexpected response.");
+      }
 
       if (!response.ok) {
         throw new Error(responseData.error || "Could not save task results.");

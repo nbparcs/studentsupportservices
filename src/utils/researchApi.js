@@ -1,6 +1,7 @@
 
-const API_URL = "http://localhost:3001/api";
+//const API_URL = "http://localhost:3001/api";
 //const API_URL = "/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PARTICIPANT_CODE_KEY = "researchParticipantCode";
 const ACTIVE_SESSION_KEY = "researchActiveSessionId";
@@ -25,6 +26,11 @@ export async function ensureResearchSession() {
   }
 
   // Prevent simultaneous session creation.
+
+  if (!API_URL) {
+    throw new Error("VITE_API_URL is not configured.");
+  }
+
   if (sessionCreationPromise) {
     return sessionCreationPromise;
   }
@@ -49,13 +55,26 @@ export async function ensureResearchSession() {
       body: JSON.stringify({ participantCode }),
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+
+let data;
+
+try {
+  data = responseText ? JSON.parse(responseText) : {};
+} catch {
+  console.error("Unexpected session response:", responseText);
+  throw new Error("The server returned an unexpected response.");
+}
 
     if (!response.ok) {
       throw new Error(
         data.error || "Could not create research session."
       );
     }
+
+    if (!Number.isInteger(Number(data.sessionId)) || Number(data.sessionId) < 1) {
+      throw new Error("Invalid session ID returned by server.");
+}
 
     // Preserve the original participant code.
     if (data.participantCode !== participantCode) {

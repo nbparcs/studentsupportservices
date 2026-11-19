@@ -5,6 +5,8 @@ import { TaskContext } from "../../Context/TaskContext.jsx";
 import { findAOI, updateAOIs } from "../../utils/aoiTracker.js";
 import { useLocation } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const CLICKS_PER_POINT = 5;
 
 const points = [
@@ -173,8 +175,11 @@ function EyeTracker() {
         while (queue.length > 0) {
           const batch = queue.slice(0, 100);
 
-          const response = await fetch("http://localhost:3001/api/gaze/batch", {
-            //const response = await fetch("/api/gaze/batch", {
+          if (!API_URL) {
+            throw new Error("VITE_API_URL is not configured.");
+          }
+
+          const response = await fetch(`${API_URL}/gaze/batch`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -185,7 +190,16 @@ function EyeTracker() {
             }),
           });
 
-          const data = await response.json();
+          const responseText = await response.text();
+
+          let data;
+
+          try {
+            data = responseText ? JSON.parse(responseText) : {};
+          } catch {
+            console.error("Unexpected gaze upload response:", responseText);
+            throw new Error("The server returned an unexpected response.");
+          }
 
           if (!response.ok) {
             throw new Error(data.error || "Gaze upload failed.");
