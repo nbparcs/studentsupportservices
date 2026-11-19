@@ -13,8 +13,10 @@ const config = {
   },
 }; */
 
-require("dotenv").config();
 const sql = require("mssql");
+require("dotenv").config();
+
+
 
 const config = {
   user: "supahadminzst333",
