@@ -45,7 +45,7 @@ function App() {
   const location = useLocation();
 
   const isResearchInformationPage =
-    location.pathname === "/research-information";
+    location.pathname === "/ParticipantInformation";
 
   return (
     <div className="app">
@@ -61,7 +61,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/baseline/home" replace />} />
           <Route
-            path="/research-information"
+            path="/ParticipantInformation"
             element={<ParticipantInformation />}
           />
           {/* Baseline */}
