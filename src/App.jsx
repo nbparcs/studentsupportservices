@@ -45,8 +45,7 @@ function App() {
   const location = useLocation();
 
   const isResearchInformationPage =
-    location.pathname === "/research-information";
-
+    location.pathname.replace(/\/$/, "") === "/research-information";
   return (
     <div className="app">
       {/* Consent appears once, regardless of the selected interface */}
