@@ -209,7 +209,15 @@ function ParticipantInformation() {
             <button
               type="button"
               className="information-back-button"
-              onClick={() => window.close()}
+              onClick={() => {
+                window.close();
+
+                setTimeout(() => {
+                  if (!window.closed) {
+                    window.history.back();
+                  }
+                }, 300);
+              }}
             >
               Close This Tab
             </button>
