@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "../styles/ParticipantPopUp.css";
 
 //const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
@@ -257,13 +258,9 @@ export default function ParticipantPopup({ onComplete }) {
             </p>
 
             <p className="participant-info-link">
-              <a
-                href="/research-information"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link to="/participant-information">
                 Click here to view the Participant Information Sheet ↗
-              </a>
+              </Link>
             </p>
 
             <hr />
