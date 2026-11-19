@@ -258,7 +258,7 @@ export default function ParticipantPopup({ onComplete }) {
             </p>
 
             <p className="participant-info-link">
-              <Link to="/participant-information">
+              <Link to="/research-information" target="_blank">
                 Click here to view the Participant Information Sheet ↗
               </Link>
             </p>
